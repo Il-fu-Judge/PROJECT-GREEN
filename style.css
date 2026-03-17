@@ -325,3 +325,56 @@ input:focus { border-color: var(--primary); }
     text-transform: uppercase;
     font-weight: bold;
 }
+
+/* Forza la larghezza dei menu e input per non uscire dallo schermo */
+#data-intervento, #status-intervento, .in-lavoro, .in-pianta, .in-note {
+    width: 100% !important;
+    box-sizing: border-box; /* Essenziale per non far uscire i bordi dallo schermo */
+    font-family: inherit; /* Uniforma il font delle note e degli altri campi */
+    font-size: 16px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Font uniforme per le note nelle box riassuntive */
+.nota-intervento {
+    font-family: inherit;
+    font-size: 14px; 
+    color: #555;
+    margin-top: 5px;
+}
+
+/* Badge Status */
+.badge-status {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: white;
+}
+
+.status-da-fare { background-color: #2e7d32; } /* Verde */
+.status-completato { background-color: #d32f2f; } /* Rosso */
+
+/* Icone azioni nelle box */
+.azioni-intervento {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    justify-content: flex-end;
+}
+
+.btn-icon-action {
+    background: none;
+    border: none;
+    color: #777;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.btn-delete { color: #d32f2f; }
