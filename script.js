@@ -1,30 +1,47 @@
+// 1. CONFIGURAZIONE - URL della tua Web App Google
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz_QpIHSYl_zDtzUAR6dHRy8AqC-_nx3HUTpuZPmucM1NBxmwQtq_PXi6y93Nesc-4Raw/exec";
 
 let recognition;
 
+// Funzione per cambiare visualizzazione tra le pagine
 function mostraPagina(id) {
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
 }
 
-// MICROFONO
+// 2. GESTIONE VOCALE (MICROFONO)
 function avviaVocale(campoId) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.webkitRecognition || window.SpeechRecognition;
     if (!SpeechRecognition) {
-        alert("Browser non supportato");
+        alert("Il tuo browser non supporta il riconoscimento vocale.");
         return;
     }
 
     recognition = new SpeechRecognition();
     recognition.lang = 'it-IT';
-    
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    // Mostra l'interfaccia di ascolto (Overlay Rosso)
     document.getElementById('status-vocale').classList.remove('hidden');
 
     recognition.onresult = (event) => {
-        document.getElementById(campoId).value = event.results[0][0].transcript;
+        let testo = event.results[0][0].transcript;
+
+        // PULIZIA TELEFONO: Se il campo è il telefono, togliamo spazi e caratteri non numerici
+        if (campoId === 'telefono') {
+            testo = testo.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
+        }
+
+        document.getElementById(campoId).value = testo;
     };
 
     recognition.onend = () => {
+        document.getElementById('status-vocale').classList.add('hidden');
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Errore riconoscimento:", event.error);
         document.getElementById('status-vocale').classList.add('hidden');
     };
 
@@ -32,14 +49,17 @@ function avviaVocale(campoId) {
 }
 
 function stopVocale() {
-    if (recognition) recognition.stop();
+    if (recognition) {
+        recognition.stop();
+    }
     document.getElementById('status-vocale').classList.add('hidden');
 }
 
-// GPS PULITO
+// 3. LOGICA GPS (MIRINO) - INDIRIZZO SEMPLIFICATO
 function ottieniPosizione() {
     const btnPos = document.querySelector('.fa-crosshairs').parentElement;
-    btnPos.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    const iconaOriginale = btnPos.innerHTML;
+    btnPos.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; // Animazione caricamento
 
     navigator.geolocation.getCurrentPosition(async (pos) => {
         const lat = pos.coords.latitude;
@@ -47,30 +67,40 @@ function ottieniPosizione() {
         document.getElementById('gps-coords').value = `${lat},${lon}`;
 
         try {
+            // Chiamata a OpenStreetMap per recuperare l'indirizzo
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
             const data = await res.json();
+            
             const a = data.address;
             
-            // Costruzione indirizzo semplificato
+            // Estrazione selettiva dei campi
             const via = a.road || "";
-            const civ = a.house_number ? " " + a.house_number : "";
-            const loc = a.village || a.town || a.city || "";
+            const civico = a.house_number ? " " + a.house_number : "";
+            const comune = a.village || a.town || a.city || "";
+
+            // Formattazione: Via NomeVia Numero, Comune
+            let indirizzoPulito = `${via}${civico}, ${comune}`.trim();
             
-            document.getElementById('indirizzo').value = `${via}${civ}, ${loc}`.trim().replace(/^,/, '');
+            // Pulizia se la stringa inizia con una virgola (es. se manca la via)
+            indirizzoPulito = indirizzoPulito.replace(/^, /, "");
+
+            document.getElementById('indirizzo').value = indirizzoPulito;
+            
         } catch (e) {
-            alert("GPS ok, errore nome via");
+            alert("Coordinate acquisite, ma non è stato possibile determinare l'indirizzo testuale.");
         } finally {
-            btnPos.innerHTML = '<i class="fas fa-crosshairs"></i>';
+            btnPos.innerHTML = iconaOriginale;
         }
-    }, () => {
-        alert("Attiva il GPS");
-        btnPos.innerHTML = '<i class="fas fa-crosshairs"></i>';
-    });
+    }, (error) => {
+        alert("Errore GPS: Assicurati di aver attivato la localizzazione sul telefono.");
+        btnPos.innerHTML = iconaOriginale;
+    }, { timeout: 10000, enableHighAccuracy: true });
 }
 
-// SALVATAGGIO
+// 4. LOGICA SALVATAGGIO (INVIO AL DATABASE)
 async function salvaDati() {
     const btn = document.getElementById('btn-salva');
+    
     const dati = {
         cliente: document.getElementById('cliente').value,
         telefono: document.getElementById('telefono').value,
@@ -78,22 +108,35 @@ async function salvaDati() {
         gps: document.getElementById('gps-coords').value
     };
 
-    if (!dati.cliente) { alert("Manca il nome!"); return; }
+    // Controllo validità minima
+    if (!dati.cliente) {
+        alert("Inserisci almeno il nome del cliente.");
+        return;
+    }
 
-    btn.innerText = "SALVATAGGIO...";
+    btn.innerText = "INVIO IN CORSO...";
     btn.disabled = true;
 
     try {
         await fetch(WEB_APP_URL, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'no-cors', // Necessario per Google Apps Script
             body: JSON.stringify(dati)
         });
-        alert("Salvato!");
-        document.querySelectorAll('input').forEach(i => i.value = "");
+
+        alert("Cliente salvato correttamente!");
+        
+        // Svuota i campi per il prossimo inserimento
+        document.getElementById('cliente').value = "";
+        document.getElementById('telefono').value = "";
+        document.getElementById('indirizzo').value = "";
+        document.getElementById('gps-coords').value = "";
+        
+        // Torna alla home
         mostraPagina('home');
+
     } catch (e) {
-        alert("Errore");
+        alert("Errore durante l'invio al database. Controlla la connessione.");
     } finally {
         btn.innerText = "SALVA NEL DATABASE";
         btn.disabled = false;
