@@ -146,7 +146,9 @@ async function salvaDati() {
 
 let tuttiIClienti = []; // Lascialo così com'è dopo la funzione
 let tuttiGliInterventi = []; // AGGIUNGI QUESTA RIGA: ci servirà per mostrare le box
-// Funzione per aprire la gestione e caricare i dati
+
+let tuttiGliInterventi = []; // Variabile globale per memorizzare gli interventi
+
 async function apriGestione() {
     mostraPagina('gestione-cliente');
     const listaDiv = document.getElementById('lista-clienti');
@@ -156,12 +158,63 @@ async function apriGestione() {
         const response = await fetch(WEB_APP_URL);
         const data = await response.json();
         
-        // Ordine alfabetico per nome cliente
-        tuttiIClienti = data.sort((a, b) => a.cliente.localeCompare(b.cliente));
+        // Salviamo i dati nelle variabili globali
+        tuttiIClienti = data.clienti.sort((a, b) => a.cliente.localeCompare(b.cliente));
+        tuttiGliInterventi = data.interventi; 
         
         renderizzaLista(tuttiIClienti);
     } catch (e) {
         listaDiv.innerHTML = '<p>Errore nel caricamento dei dati.</p>';
+    }
+}
+
+// Questa funzione crea le box riassuntive nella scheda cliente
+function apriDettagli(nome) {
+    clienteSelezionato = nome;
+    document.getElementById('nome-cliente-titolo').innerText = nome;
+    mostraPagina('scheda-cliente');
+    
+    const container = document.getElementById('lista-interventi');
+    container.innerHTML = '';
+
+    // Filtriamo gli interventi che appartengono solo a questo cliente
+    const interventiCliente = tuttiGliInterventi.filter(i => i.cliente === nome);
+
+    if (interventiCliente.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:20px; color:#666;">Nessun intervento registrato.</p>';
+        return;
+    }
+
+    // Raggruppiamo per data (perché un intervento può avere più righe nello stesso giorno)
+    const raggruppati = {};
+    interventiCliente.forEach(i => {
+        const dataKey = new Date(i.data).toLocaleDateString('it-IT');
+        if (!raggruppati[dataKey]) {
+            raggruppati[dataKey] = { status: i.status, righe: [] };
+        }
+        raggruppati[dataKey].righe.push(i);
+    });
+
+    // Creiamo le box grafiche
+    for (const data in raggruppati) {
+        const info = raggruppati[data];
+        const box = document.createElement('div');
+        box.className = 'scheda-cliente'; // Usiamo la stessa classe per coerenza
+        box.style.borderLeft = info.status === "Completato" ? "5px solid #2e7d32" : "5px solid #ffa000";
+
+        let elencoLavori = info.righe.map(r => `<li><b>${r.lavoro}</b> su ${r.pianta}</li>`).join('');
+
+        box.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <span style="font-weight:bold; color:#333;">${data}</span>
+                <span class="badge-status">${info.status}</span>
+            </div>
+            <ul style="margin: 10px 0; padding-left: 20px; font-size: 14px;">
+                ${elencoLavori}
+            </ul>
+            <p style="font-size:12px; color:#77)666; font-style:italic;">${info.righe[0].note || ""}</p>
+        `;
+        container.appendChild(box);
     }
 }
 
