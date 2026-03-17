@@ -22,27 +22,23 @@
     </div>
 
     <div id="gestione-cliente" class="view hidden">
-    <button onclick="mostraPagina('home')" class="btn-home-float bg-blu">
-    <i class="fas fa-home"></i>
-    </button>
-
-    <h2 style="text-align: center;">I Tuoi Clienti</h2>
-    
-    <div class="search-container">
-        <input type="text" id="cerca-cliente" placeholder="🔍 Cerca cliente..." onkeyup="filtraClienti()">
+        <button onclick="mostraPagina('home')" class="btn-home-float bg-blu">
+            <i class="fas fa-home"></i>
+        </button>
+        <h2 style="text-align: center;">I Tuoi Clienti</h2>
+        <div class="search-container">
+            <input type="text" id="cerca-cliente" placeholder="🔍 Cerca cliente..." onkeyup="filtraClienti()">
+        </div>
+        <div id="lista-clienti" class="lista-container">
+            <p class="caricamento">Caricamento database...</p>
+        </div>
     </div>
-
-    <div id="lista-clienti" class="lista-container">
-        <p class="caricamento">Caricamento database...</p>
-    </div>
-</div>
 
     <div id="nuovo-cliente" class="view hidden">
         <button onclick="mostraPagina('home')" class="btn-home-float bg-verde">
-        <i class="fas fa-home"></i>
+            <i class="fas fa-home"></i>
         </button>
         <h2>Dettagli Cliente</h2>
-
         <div class="input-group">
             <label>Nome Cliente</label>
             <div class="input-row">
@@ -50,7 +46,6 @@
                 <button onclick="avviaVocale('cliente')" class="btn-icon"><i class="fas fa-microphone"></i></button>
             </div>
         </div>
-
         <div class="input-group">
             <label>Telefono</label>
             <div class="input-row">
@@ -58,7 +53,6 @@
                 <button onclick="avviaVocale('telefono')" class="btn-icon"><i class="fas fa-microphone"></i></button>
             </div>
         </div>
-
         <div class="input-group">
             <label>Indirizzo</label>
             <div class="input-row">
@@ -66,64 +60,53 @@
                 <button onclick="ottieniPosizione()" class="btn-icon"><i class="fas fa-crosshairs"></i></button>
             </div>
         </div>
-
-        <div id="status-vocale" class="status-box hidden">
-            <i class="fas fa-microphone fa-3x" style="color: #d32f2f; margin-bottom: 20px;"></i>
-            <p style="font-size: 20px; font-weight: bold;">Ti sto ascoltando...</p>
-            <button onclick="stopVocale()" class="btn-stop">STOP MANUALE</button>
-        </div>
-
-        <button id="btn-salva" onclick="salvaDati()" class="btn-save">SALVA NEL DATABASE</button>        
         <input type="hidden" id="gps-coords">
+        <button id="btn-salva" onclick="salvaDati()" class="btn-save">SALVA NEL DATABASE</button>
+    </div>
+
+    <div id="scheda-cliente" class="view hidden">
+        <button onclick="mostraPagina('gestione-cliente')" class="btn-home-float bg-blu">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2 id="nome-cliente-titolo" style="text-align: center; color: #0d47a1;">Nome Cliente</h2>
+        <div id="lista-interventi" class="lista-container"></div>
+        <button onclick="nuovoIntervento()" class="btn-main" style="margin-top: 20px;">
+            <i class="fas fa-plus-circle"></i> AGGIUNGI INTERVENTO
+        </button>
+    </div>
+
+    <div id="editor-intervento" class="view hidden">
+        <button onclick="mostraPagina('scheda-cliente')" class="btn-home-float bg-blu">
+            <i class="fas fa-times"></i>
+        </button>
+        <h2 style="text-align: center;">Dettaglio Lavoro</h2>
+        <div class="input-group">
+            <label>Data Intervento</label>
+            <input type="date" id="data-intervento">
+        </div>
+        <div class="input-group">
+            <label>Status</label>
+            <select id="status-intervento">
+                <option value="Da Fare">Da Fare</option>
+                <option value="In Corso">In Corso</option>
+                <option value="Completato">Completato</option>
+            </select>
+        </div>
+        <hr>
+        <h3>Azioni da svolgere</h3>
+        <div id="righe-intervento"></div>
+        <button onclick="aggiungiRigaLavoro()" class="btn-icon" style="width: 50px; height: 50px; border-radius: 50%; background: #2e7d32; color: white; margin: 10px auto; display: block;">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button onclick="salvaIntervento()" class="btn-save" style="margin-top: 30px;">SALVA INTERVENTO</button>
+    </div>
+
+    <div id="status-vocale" class="status-box hidden">
+        <i class="fas fa-microphone fa-3x" style="color: #d32f2f; margin-bottom: 20px;"></i>
+        <p style="font-size: 20px; font-weight: bold;">Ti sto ascoltando...</p>
+        <button onclick="stopVocale()" class="btn-stop">STOP MANUALE</button>
     </div>
 
     <script src="script.js"></script>
-    <div id="scheda-cliente" class="view hidden">
-    <button onclick="mostraPagina('gestione-cliente')" class="btn-home-float bg-blu">
-        <i class="fas fa-arrow-left"></i>
-    </button>
-    
-    <h2 id="nome-cliente-titolo" style="text-align: center; color: #0d47a1;">Nome Cliente</h2>
-    
-    <div id="lista-interventi" class="lista-container">
-        </div>
-
-    <button onclick="nuovoIntervento()" class="btn-main" style="margin-top: 20px;">
-        <i class="fas fa-plus-circle"></i> AGGIUNGI INTERVENTO
-    </button>
-</div>
-
-<div id="editor-intervento" class="view hidden">
-    <button onclick="mostraPagina('scheda-cliente')" class="btn-home-float bg-blu">
-        <i class="fas fa-times"></i>
-    </button>
-    
-    <h2 style="text-align: center;">Dettaglio Lavoro</h2>
-    
-    <div class="input-group">
-        <label>Data Intervento</label>
-        <input type="date" id="data-intervento">
-    </div>
-    
-    <div class="input-group">
-        <label>Status</label>
-        <select id="status-intervento">
-            <option value="Da Fare">Da Fare</option>
-            <option value="In Corso">In Corso</option>
-            <option value="Completato">Completato</option>
-        </select>
-    </div>
-
-    <hr>
-    <h3>Azioni da svolgere</h3>
-    <div id="righe-intervento">
-        </div>
-
-    <button onclick="aggiungiRigaLavoro()" class="btn-icon" style="width: 50px; height: 50px; border-radius: 50%; background: #2e7d32; color: white; margin: 10px auto; display: block;">
-        <i class="fas fa-plus"></i>
-    </button>
-
-    <button onclick="salvaIntervento()" class="btn-save" style="margin-top: 30px;">SALVA INTERVENTO</button>
-</div>
 </body>
 </html>
