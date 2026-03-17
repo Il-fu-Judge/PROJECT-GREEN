@@ -235,3 +235,33 @@ input:focus { border-color: var(--primary); }
 /* Colori specifici per le pagine */
 .bg-blu { background-color: #0d47a1; }   /* Per Gestione */
 .bg-verde { background-color: #2e7d32; } /* Per Nuovo Cliente */
+
+/* Box dell'intervento nella lista */
+.box-intervento {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 5px solid #ffa000; /* Arancione per "Da fare" */
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Riga singola di lavoro nell'editor */
+.riga-lavoro {
+    background: white;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.riga-lavoro input {
+    width: 100%;
+    margin-bottom: 5px;
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 5px;
+}
