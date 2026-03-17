@@ -1,0 +1,66 @@
+:root {
+    --primary: #2e7d32; /* Verde foresta */
+    --secondary: #455a64;
+    --bg: #f1f8e9;
+    --text: #1b5e20;
+}
+
+body { 
+    font-family: 'Segoe UI', sans-serif; 
+    background-color: var(--bg); 
+    color: var(--text);
+    margin: 0; padding: 20px;
+    display: flex; justify-content: center;
+}
+
+.view { width: 100%; max-width: 500px; }
+.hidden { display: none; }
+
+h1, h2 { text-align: center; color: var(--primary); }
+
+/* Pulsanti Principali */
+.btn-main {
+    display: flex; align-items: center; justify-content: center; gap: 15px;
+    width: 100%; padding: 30px; margin: 20px 0;
+    font-size: 20px; font-weight: bold;
+    border: none; border-radius: 15px;
+    background: white; color: var(--primary);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btn-main.secondary { color: var(--secondary); }
+
+/* Form e Input */
+.input-group { margin-bottom: 20px; }
+label { display: block; margin-bottom: 8px; font-weight: bold; }
+.input-row { display: flex; gap: 10px; }
+
+input {
+    flex-grow: 1; padding: 15px;
+    border: 2px solid #c8e6c9; border-radius: 10px;
+    font-size: 16px;
+}
+
+.btn-icon {
+    padding: 15px; background: var(--primary); color: white;
+    border: none; border-radius: 10px; width: 60px;
+}
+
+/* Status Vocale */
+.status-box {
+    background: rgba(0,0,0,0.8); color: white;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 1000;
+}
+
+.btn-stop {
+    background: #d32f2f; color: white; padding: 15px 30px;
+    border: none; border-radius: 50px; margin-top: 20px;
+}
+
+.btn-save {
+    width: 100%; padding: 20px; background: var(--primary);
+    color: white; border: none; border-radius: 10px;
+    font-size: 18px; font-weight: bold; margin-top: 30px;
+}
