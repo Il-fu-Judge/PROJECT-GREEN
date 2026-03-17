@@ -169,3 +169,43 @@ input:focus { border-color: var(--primary); }
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     z-index: 1000;
 }
+
+/* Posizionamento del pulsante Torna Indietro in basso a destra */
+.btn-back {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #333;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Barra di ricerca larga e centrata */
+#cerca-cliente {
+    width: 100%;
+    max-width: 500px;
+    padding: 15px;
+    border-radius: 25px; /* Arrotondata stile contatti */
+    border: 1px solid #ddd;
+    font-size: 16px;
+    margin: 10px auto 20px auto;
+    display: block;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Container della ricerca per centrarla bene */
+.search-container {
+    padding: 0 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
