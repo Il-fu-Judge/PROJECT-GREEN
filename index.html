@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Clienti</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="home" class="view">
+        <h1>Gestione Lavori</h1>
+        <div class="menu-grid">
+            <button onclick="mostraPagina('nuovo-cliente')" class="btn-main">
+                <i class="fas fa-user-plus"></i> Nuovo Cliente
+            </button>
+            <button onclick="alert('Pagina in costruzione')" class="btn-main secondary">
+                <i class="fas fa-users-cog"></i> Gestisci Cliente
+            </button>
+        </div>
+    </div>
+
+    <div id="nuovo-cliente" class="view hidden">
+        <button onclick="mostraPagina('home')" class="btn-back">← Torna Indietro</button>
+        <h2>Dettagli Cliente</h2>
+
+        <div class="input-group">
+            <label>Nome Cliente</label>
+            <div class="input-row">
+                <input type="text" id="cliente" placeholder="Inserisci o detta nome">
+                <button onclick="avviaVocale('cliente')" class="btn-icon"><i class="fas fa-microphone"></i></button>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Telefono</label>
+            <div class="input-row">
+                <input type="tel" id="telefono" placeholder="Inserisci o detta numero">
+                <button onclick="avviaVocale('telefono')" class="btn-icon"><i class="fas fa-microphone"></i></button>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Indirizzo</label>
+            <div class="input-row">
+                <input type="text" id="indirizzo" placeholder="Via, Civico, Città">
+                <button onclick="ottieniPosizione()" class="btn-icon"><i class="fas fa-crosshairs"></i></button>
+            </div>
+        </div>
+
+        <div id="status-vocale" class="status-box hidden">
+            <p>In ascolto...</p>
+            <button onclick="stopVocale()" class="btn-stop">STOP Manuale</button>
+        </div>
+
+        <button id="btn-salva" onclick="salvaDati()" class="btn-save">SALVA NEL DATABASE</button>
+        
+        <input type="hidden" id="gps-coords">
+    </div>
+
+    <script>
+        // Qui inseriremo la logica JavaScript nel prossimo step
+        function mostraPagina(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
