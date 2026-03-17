@@ -154,6 +154,7 @@ function filtraClienti() {
 }
 
 // 6. INTERVENTI
+// Carica i dettagli e genera le box con i nuovi colori e icone
 function apriDettagli(nome) {
     clienteSelezionato = nome;
     document.getElementById('nome-cliente-titolo').innerText = nome;
@@ -171,22 +172,37 @@ function apriDettagli(nome) {
 
     const raggruppati = {};
     interventiCliente.forEach(i => {
-        const d = new Date(i.data);
-        const dataKey = isNaN(d) ? i.data : d.toLocaleDateString('it-IT');
+        const dataKey = i.data; 
         if (!raggruppati[dataKey]) raggruppati[dataKey] = { status: i.status, righe: [] };
         raggruppati[dataKey].righe.push(i);
     });
 
     for (const data in raggruppati) {
         const info = raggruppati[data];
+        const isCompletato = info.status === "Completato";
+        
         const box = document.createElement('div');
         box.className = 'scheda-cliente';
-        box.style.borderLeft = info.status === "Completato" ? "5px solid #2e7d32" : "5px solid #ffa000";
-        let elenco = info.righe.map(r => `<li><b>${r.lavoro}</b>: ${r.pianta}</li>`).join('');
+        // Invertito: Verde se "Da Fare", Rosso se "Completato"
+        box.style.borderLeft = isCompletato ? "6px solid #d32f2f" : "6px solid #2e7d32";
+
+        let elenco = info.righe.map(r => `<li><b>${r.lavoro}</b> su ${r.pianta}</li>`).join('');
+        const statusClass = isCompletato ? "status-completato" : "status-da-fare";
+
         box.innerHTML = `
-            <div style="display:flex; justify-content:space-between;"><b>${data}</b> <span class="badge-status">${info.status}</span></div>
-            <ul style="margin:10px 0; padding-left:20px;">${elenco}</ul>
-            <p style="font-size:12px; font-style:italic;">${info.righe[0].note || ""}</p>`;
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:bold;">${new Date(data).toLocaleDateString('it-IT')}</span>
+                <span class="badge-status ${statusClass}">${info.status}</span>
+            </div>
+            <ul style="margin:10px 0; padding-left:20px; font-size:15px;">${elenco}</ul>
+            <p class="nota-intervento">${info.righe[0].note || ""}</p>
+            
+            <div class="azioni-intervento">
+                <button class="btn-icon-action" onclick="caricaInterventoPerModifica('${data}')"><i class="fas fa-edit"></i></button>
+                <button class="btn-icon-action"><i class="fas fa-image"></i></button>
+                <button class="btn-icon-action btn-delete" onclick="eliminaIntervento('${data}')"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        `;
         container.appendChild(box);
     }
 }
@@ -211,32 +227,41 @@ function aggiungiRigaLavoro() {
     container.appendChild(div);
 }
 
-async function salvaIntervento() {
-    const btn = document.querySelector('#editor-intervento .btn-save');
-    const righe = document.querySelectorAll('.riga-lavoro');
-    let dettagli = [];
-    righe.forEach(r => {
-        const lavoro = r.querySelector('.in-lavoro').value;
-        const pianta = r.querySelector('.in-pianta').value;
-        const note = r.querySelector('.in-note').value;
-        if(lavoro || pianta) dettagli.push({ lavoro, pianta, note });
-    });
-    
-    if (dettagli.length === 0) { alert("Inserisci almeno un lavoro."); return; }
-    
-    const payload = {
-        tipo: "NUOVO_INTERVENTO",
-        cliente: clienteSelezionato,
-        data: document.getElementById('data-intervento').value,
-        status: document.getElementById('status-intervento').value,
-        dettagli: dettagli
-    };
+// Funzione per rientrare in modalità editing
+function caricaInterventoPerModifica(dataOriginale) {
+    const interventiData = tuttiGliInterventi.filter(i => i.cliente === clienteSelezionato && i.data === dataOriginale);
+    if (interventiData.length === 0) return;
 
-    btn.innerText = "SALVATAGGIO..."; btn.disabled = true;
-    try {
-        await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        alert("Intervento salvato!");
-        apriGestione();
-    } catch (e) { alert("Errore."); }
-    finally { btn.innerText = "SALVA INTERVENTO"; btn.disabled = false; }
+    nuovoIntervento(); // Pulisce l'editor
+    document.getElementById('data-intervento').value = dataOriginale;
+    document.getElementById('status-intervento').value = interventiData[0].status;
+    
+    const container = document.getElementById('righe-intervento');
+    container.innerHTML = ''; // Rimuoviamo la riga vuota creata da nuovoIntervento
+
+    interventiData.forEach(r => {
+        aggiungiRigaLavoro();
+        const ultimeRighe = container.querySelectorAll('.riga-lavoro');
+        const ultima = ultimeRighe[ultimeRighe.length - 1];
+        ultima.querySelector('.in-lavoro').value = r.lavoro;
+        ultima.querySelector('.in-pianta').value = r.pianta;
+        ultima.querySelector('.in-note').value = r.note;
+    });
+}
+
+// Funzione per eliminare (richiede box di conferma)
+async function eliminaIntervento(dataDaEliminare) {
+    if (confirm("Sei sicuro di voler cancellare questo intervento?")) {
+        const payload = {
+            tipo: "ELIMINA_INTERVENTO",
+            cliente: clienteSelezionato,
+            data: dataDaEliminare
+        };
+        
+        try {
+            await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            alert("Intervento eliminato.");
+            apriGestione(); // Ricarica tutto
+        } catch (e) { alert("Errore durante l'eliminazione."); }
+    }
 }
