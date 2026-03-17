@@ -1,5 +1,5 @@
 // 1. CONFIGURAZIONE
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyjs2DhgGeqEGeYdhTBUIvw4yYgmPoMCsmXN34wKgOkLSA9GiG56D2s8jCoDsf0e4WgXg/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxMROYF78ED8hXPsAWjeluKzArdd1NM5OiIvjv1PrXJa9ny19RDAilgjNnj3lp3yY8Ofw/exec";
 
 let recognition;
 let tuttiIClienti = [];
@@ -325,5 +325,30 @@ async function eliminaIntervento(dataDaEliminare) {
             tuttiGliInterventi = tuttiGliInterventi.filter(i => !(i.cliente === clienteSelezionato && i.data === dataDaEliminare));
             apriDettagli(clienteSelezionato);
         } catch (e) { alert("Errore durante l'eliminazione."); }
+    }
+}
+
+async function inviaACalendario(dataIntervento, lavoro, piante, note) {
+    // Cerchiamo i dati del cliente attuale per avere indirizzo e GPS
+    const infoCliente = tuttiIClienti.find(c => c.cliente === clienteSelezionato);
+    
+    const payload = {
+        tipo: "AGGIUNGI_CALENDARIO",
+        cliente: clienteSelezionato,
+        data: dataIntervento,
+        lavoro: lavoro,
+        piante: piante,
+        note: note,
+        indirizzo: infoCliente ? infoCliente.indirizzo : "",
+        gps: infoCliente ? infoCliente.gps : ""
+    };
+
+    try {
+        // Mostriamo un feedback veloce
+        alert("Invio al calendario in corso...");
+        await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        alert("Intervento aggiunto al Calendario!");
+    } catch (e) {
+        alert("Errore nell'invio al calendario.");
     }
 }
