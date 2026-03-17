@@ -187,6 +187,11 @@ function apriDettagli(nome) {
         let elenco = info.righe.map(r => `<li><b>${r.lavoro}</b> su ${r.pianta}</li>`).join('');
         const statusClass = isCompletato ? "status-completato" : "status-da-fare";
 
+        // Variabili pulite per evitare errori con gli apostrofi nel tasto calendario
+        const lavS = info.righe[0].lavoro.replace(/'/g, "\\'");
+        const piaS = info.righe[0].pianta.replace(/'/g, "\\'");
+        const notS = (info.righe[0].note || "").replace(/'/g, "\\'");
+
         box.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-weight:bold;">${new Date(data).toLocaleDateString('it-IT')}</span>
@@ -196,6 +201,11 @@ function apriDettagli(nome) {
             <p class="nota-intervento">${info.righe[0].note || ""}</p>
             
             <div class="azioni-intervento">
+                <button class="btn-icon-action" title="Calendario" 
+                    onclick="inviaACalendario('${data}', '${lavS}', '${piaS}', '${notS}')">
+                    <i class="fas fa-calendar-plus" style="color: #4285F4;"></i>
+                </button>
+
                 <button class="btn-icon-action" onclick="caricaInterventoPerModifica('${data}')"><i class="fas fa-edit"></i></button>
                 <button class="btn-icon-action"><i class="fas fa-image"></i></button>
                 <button class="btn-icon-action btn-delete" onclick="eliminaIntervento('${data}')"><i class="fas fa-trash-alt"></i></button>
