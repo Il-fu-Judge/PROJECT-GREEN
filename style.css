@@ -1,66 +1,101 @@
 :root {
-    --primary: #2e7d32; /* Verde foresta */
-    --secondary: #455a64;
+    --primary: #1b5e20; /* Verde scuro per massima leggibilità */
+    --secondary: #0d47a1; /* Blu scuro per Gestione Cliente */
     --bg: #f1f8e9;
     --text: #1b5e20;
+    --white: #ffffff;
+}
+
+body, html { 
+    height: 100%; 
+    margin: 0; 
+    font-family: 'Segoe UI', Roboto, sans-serif; 
+    background-color: var(--bg); 
 }
 
 body { 
-    font-family: 'Segoe UI', sans-serif; 
-    background-color: var(--bg); 
-    color: var(--text);
-    margin: 0; padding: 20px;
-    display: flex; justify-content: center;
+    display: flex; 
+    align-items: center; /* Centratura verticale */
+    justify-content: center; 
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-.view { width: 100%; max-width: 500px; }
-.hidden { display: none; }
+.view { 
+    width: 100%; 
+    max-width: 450px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 
-h1, h2 { text-align: center; color: var(--primary); }
+.hidden { display: none !important; }
 
-/* Pulsanti Principali */
+h1, h2 { 
+    text-align: center; 
+    color: var(--primary); 
+    margin-bottom: 30px; 
+}
+
+/* Pulsanti Principali Dashboard */
 .btn-main {
     display: flex; align-items: center; justify-content: center; gap: 15px;
-    width: 100%; padding: 30px; margin: 20px 0;
-    font-size: 20px; font-weight: bold;
-    border: none; border-radius: 15px;
-    background: white; color: var(--primary);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 100%; padding: 25px; margin: 12px 0;
+    font-size: 18px; font-weight: bold;
+    border: 2px solid transparent; border-radius: 16px;
+    background: var(--white); color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.1s;
+    cursor: pointer;
 }
 
-.btn-main.secondary { color: var(--secondary); }
+/* Colore specifico per Gestione Cliente */
+.btn-main.secondary { 
+    color: var(--secondary); 
+}
 
-/* Form e Input */
-.input-group { margin-bottom: 20px; }
-label { display: block; margin-bottom: 8px; font-weight: bold; }
-.input-row { display: flex; gap: 10px; }
+.btn-main:active {
+    transform: scale(0.97); /* Effetto pressione */
+    background-color: #fcfcfc;
+}
+
+/* Form Nuovo Cliente */
+.input-group { margin-bottom: 18px; }
+label { display: block; margin-bottom: 6px; font-weight: bold; color: var(--primary); }
+.input-row { display: flex; gap: 8px; }
 
 input {
-    flex-grow: 1; padding: 15px;
-    border: 2px solid #c8e6c9; border-radius: 10px;
-    font-size: 16px;
+    flex-grow: 1; padding: 16px;
+    border: 2px solid #c8e6c9; border-radius: 12px;
+    font-size: 16px; outline: none;
 }
+
+input:focus { border-color: var(--primary); }
 
 .btn-icon {
-    padding: 15px; background: var(--primary); color: white;
-    border: none; border-radius: 10px; width: 60px;
+    padding: 16px; background: var(--primary); color: var(--white);
+    border: none; border-radius: 12px; min-width: 55px;
+    display: flex; align-items: center; justify-content: center;
 }
 
-/* Status Vocale */
+/* Pulsanti di Azione Finale */
+.btn-save {
+    width: 100%; padding: 18px; background: var(--primary);
+    color: var(--white); border: none; border-radius: 12px;
+    font-size: 18px; font-weight: bold; margin-top: 25px;
+    box-shadow: 0 4px 10px rgba(27, 94, 32, 0.3);
+}
+
+.btn-back {
+    background: none; border: none; color: var(--secondary);
+    font-weight: bold; margin-bottom: 15px; cursor: pointer;
+    align-self: flex-start;
+}
+
+/* Overlay Vocale */
 .status-box {
-    background: rgba(0,0,0,0.8); color: white;
+    background: rgba(0,0,0,0.85); color: white;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     z-index: 1000;
-}
-
-.btn-stop {
-    background: #d32f2f; color: white; padding: 15px 30px;
-    border: none; border-radius: 50px; margin-top: 20px;
-}
-
-.btn-save {
-    width: 100%; padding: 20px; background: var(--primary);
-    color: white; border: none; border-radius: 10px;
-    font-size: 18px; font-weight: bold; margin-top: 30px;
 }
