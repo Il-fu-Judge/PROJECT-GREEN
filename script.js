@@ -1,5 +1,5 @@
 // 1. CONFIGURAZIONE - URL della tua Web App Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyOfOkcKd37bqk-3O4RZOOOM_SHG8DmI7JHoi-CzKLK0PTMhP1W8f56l4WtCN6u5I2SzA/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzePV3FylbP4hfbR70GOWgzl8Drv3a7f4tYN43gNLSwKGNR7N11XsyoQ96pvBP_-vbC8A/exec";
 
 let recognition;
 
@@ -97,11 +97,12 @@ function ottieniPosizione() {
     }, { timeout: 10000, enableHighAccuracy: true });
 }
 
-// 4. LOGICA SALVATAGGIO (INVIO AL DATABASE)
+// 4. LOGICA SALVATAGGIO (INVIO AL DATABASE) - AGGIORNATA
 async function salvaDati() {
     const btn = document.getElementById('btn-salva');
     
     const dati = {
+        tipo: "NUOVO_CLIENTE", // Fondamentale per il nuovo script di Google
         cliente: document.getElementById('cliente').value,
         telefono: document.getElementById('telefono').value,
         indirizzo: document.getElementById('indirizzo').value,
@@ -120,13 +121,13 @@ async function salvaDati() {
     try {
         await fetch(WEB_APP_URL, {
             method: 'POST',
-            mode: 'no-cors', // Necessario per Google Apps Script
+            mode: 'no-cors', 
             body: JSON.stringify(dati)
         });
 
         alert("Cliente salvato correttamente!");
         
-        // Svuota i campi per il prossimo inserimento
+        // Svuota i campi del form "Nuovo Cliente"
         document.getElementById('cliente').value = "";
         document.getElementById('telefono').value = "";
         document.getElementById('indirizzo').value = "";
@@ -143,8 +144,8 @@ async function salvaDati() {
     }
 }
 
-let tuttiIClienti = []; // Variabile globale per la ricerca
-
+let tuttiIClienti = []; // Lascialo così com'è dopo la funzione
+let tuttiGliInterventi = []; // AGGIUNGI QUESTA RIGA: ci servirà per mostrare le box
 // Funzione per aprire la gestione e caricare i dati
 async function apriGestione() {
     mostraPagina('gestione-cliente');
