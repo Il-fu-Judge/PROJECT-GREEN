@@ -92,6 +92,25 @@ input:focus { border-color: var(--primary); }
     align-self: flex-start;
 }
 
+.btn-stop {
+    width: 80%; /* Più grande e facile da premere */
+    padding: 20px;
+    background-color: #d32f2f; /* Rosso deciso */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(211, 47, 47, 0.4);
+    cursor: pointer;
+}
+
+.btn-stop:active {
+    transform: scale(0.95);
+}
+
 /* Overlay Vocale */
 .status-box {
     background: rgba(0,0,0,0.85); color: white;
