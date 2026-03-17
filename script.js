@@ -129,7 +129,7 @@ function renderizzaLista(lista) {
     listaDiv.innerHTML = '';
     
     lista.forEach(c => {
-        const mapUrl = c.gps ? `https://www.google.com/maps?q=${c.gps}` : `https://www.google.com/maps?q=${encodeURIComponent(c.indirizzo)}`;
+        const mapUrl = c.gps ? `http://www.google.com/maps?q=${c.gps}` : `http://www.google.com/maps?q=${encodeURIComponent(c.indirizzo)}`;
         const scheda = document.createElement('div');
         scheda.className = 'scheda-cliente';
         scheda.innerHTML = `
@@ -154,7 +154,6 @@ function filtraClienti() {
 }
 
 // 6. INTERVENTI
-// Carica i dettagli e genera le box con i nuovi colori e icone
 function apriDettagli(nome) {
     clienteSelezionato = nome;
     document.getElementById('nome-cliente-titolo').innerText = nome;
@@ -183,7 +182,6 @@ function apriDettagli(nome) {
         
         const box = document.createElement('div');
         box.className = 'scheda-cliente';
-        // Invertito: Verde se "Da Fare", Rosso se "Completato"
         box.style.borderLeft = isCompletato ? "6px solid #d32f2f" : "6px solid #2e7d32";
 
         let elenco = info.righe.map(r => `<li><b>${r.lavoro}</b> su ${r.pianta}</li>`).join('');
@@ -232,12 +230,19 @@ function caricaInterventoPerModifica(dataOriginale) {
     const interventiData = tuttiGliInterventi.filter(i => i.cliente === clienteSelezionato && i.data === dataOriginale);
     if (interventiData.length === 0) return;
 
-    nuovoIntervento(); // Pulisce l'editor
-    document.getElementById('data-intervento').value = dataOriginale;
+    mostraPagina('editor-intervento');
+    
+    // FORMATTAZIONE DATA PER INPUT HTML (AAAA-MM-GG)
+    const d = new Date(dataOriginale);
+    const dataFormattata = d.getFullYear() + '-' + 
+                           String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+                           String(d.getDate()).padStart(2, '0');
+    
+    document.getElementById('data-intervento').value = dataFormattata;
     document.getElementById('status-intervento').value = interventiData[0].status;
     
     const container = document.getElementById('righe-intervento');
-    container.innerHTML = ''; // Rimuoviamo la riga vuota creata da nuovoIntervento
+    container.innerHTML = ''; 
 
     interventiData.forEach(r => {
         aggiungiRigaLavoro();
@@ -249,7 +254,43 @@ function caricaInterventoPerModifica(dataOriginale) {
     });
 }
 
-// Funzione per eliminare (richiede box di conferma)
+// Funzione Salva Intervento (Corretta per navigazione)
+async function salvaIntervento() {
+    const btn = document.querySelector('#editor-intervento .btn-save');
+    const righe = document.querySelectorAll('.riga-lavoro');
+    let dettagli = [];
+    righe.forEach(r => {
+        const lavoro = r.querySelector('.in-lavoro').value;
+        const pianta = r.querySelector('.in-pianta').value;
+        const note = r.querySelector('.in-note').value;
+        if(lavoro || pianta) dettagli.push({ lavoro, pianta, note });
+    });
+    
+    if (dettagli.length === 0) { alert("Inserisci almeno un lavoro."); return; }
+    
+    const payload = {
+        tipo: "NUOVO_INTERVENTO",
+        cliente: clienteSelezionato,
+        data: document.getElementById('data-intervento').value,
+        status: document.getElementById('status-intervento').value,
+        dettagli: dettagli
+    };
+
+    btn.innerText = "SALVATAGGIO..."; btn.disabled = true;
+    try {
+        await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        alert("Intervento salvato!");
+        
+        // Rinfresca i dati dal server e rimani sul cliente
+        const response = await fetch(WEB_APP_URL);
+        const data = await response.json();
+        tuttiGliInterventi = data.interventi || [];
+        apriDettagli(clienteSelezionato);
+    } catch (e) { alert("Errore durante il salvataggio."); }
+    finally { btn.innerText = "SALVA INTERVENTO"; btn.disabled = false; }
+}
+
+// Funzione per eliminare (Corretta per navigazione)
 async function eliminaIntervento(dataDaEliminare) {
     if (confirm("Sei sicuro di voler cancellare questo intervento?")) {
         const payload = {
@@ -261,7 +302,10 @@ async function eliminaIntervento(dataDaEliminare) {
         try {
             await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
             alert("Intervento eliminato.");
-            apriGestione(); // Ricarica tutto
+            
+            // Aggiorna dati locali e rimani sul cliente
+            tuttiGliInterventi = tuttiGliInterventi.filter(i => !(i.cliente === clienteSelezionato && i.data === dataDaEliminare));
+            apriDettagli(clienteSelezionato);
         } catch (e) { alert("Errore durante l'eliminazione."); }
     }
 }
