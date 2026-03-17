@@ -22,17 +22,20 @@
     </div>
 
     <div id="gestione-cliente" class="view hidden">
-        <button onclick="mostraPagina('home')" class="btn-back">← Torna alla Home</button>
-        <h2>I Tuoi Clienti</h2>
-        
-        <div class="input-group">
-            <input type="text" id="cerca-cliente" placeholder="Cerca per nome..." onkeyup="filtraClienti()">
-        </div>
+    <button onclick="mostraPagina('home')" class="btn-back">
+        <i class="fas fa-home"></i>
+    </button>
 
-        <div id="lista-clienti" class="lista-container">
-            <p class="caricamento">Caricamento database...</p>
-        </div>
+    <h2 style="text-align: center;">I Tuoi Clienti</h2>
+    
+    <div class="search-container">
+        <input type="text" id="cerca-cliente" placeholder="🔍 Cerca cliente..." onkeyup="filtraClienti()">
     </div>
+
+    <div id="lista-clienti" class="lista-container">
+        <p class="caricamento">Caricamento database...</p>
+    </div>
+</div>
 
     <div id="nuovo-cliente" class="view hidden">
         <button onclick="mostraPagina('home')" class="btn-back">← Torna Indietro</button>
