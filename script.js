@@ -1,5 +1,5 @@
 // 1. CONFIGURAZIONE - URL della tua Web App Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz_QpIHSYl_zDtzUAR6dHRy8AqC-_nx3HUTpuZPmucM1NBxmwQtq_PXi6y93Nesc-4Raw/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyOfOkcKd37bqk-3O4RZOOOM_SHG8DmI7JHoi-CzKLK0PTMhP1W8f56l4WtCN6u5I2SzA/exec";
 
 let recognition;
 
@@ -141,4 +141,75 @@ async function salvaDati() {
         btn.innerText = "SALVA NEL DATABASE";
         btn.disabled = false;
     }
+}
+
+let tuttiIClienti = []; // Variabile globale per la ricerca
+
+// Funzione per aprire la gestione e caricare i dati
+async function apriGestione() {
+    mostraPagina('gestione-cliente');
+    const listaDiv = document.getElementById('lista-clienti');
+    listaDiv.innerHTML = '<p class="caricamento">Caricamento database...</p>';
+
+    try {
+        const response = await fetch(WEB_APP_URL);
+        const data = await response.json();
+        
+        // Ordine alfabetico per nome cliente
+        tuttiIClienti = data.sort((a, b) => a.cliente.localeCompare(b.cliente));
+        
+        renderizzaLista(tuttiIClienti);
+    } catch (e) {
+        listaDiv.innerHTML = '<p>Errore nel caricamento dei dati.</p>';
+    }
+}
+
+// Crea fisicamente le schede nell'HTML
+function renderizzaLista(lista) {
+    const listaDiv = document.getElementById('lista-clienti');
+    listaDiv.innerHTML = '';
+
+    if (lista.length === 0) {
+        listaDiv.innerHTML = '<p>Nessun cliente trovato.</p>';
+        return;
+    }
+
+    lista.forEach(c => {
+        const scheda = document.createElement('div');
+        scheda.className = 'scheda-cliente';
+        
+        // Creazione link Google Maps dalle coordinate
+        const mapUrl = c.gps ? `https://www.google.com/maps/search/?api=1&query=${c.gps}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.indirizzo)}`;
+
+        scheda.innerHTML = `
+            <h3>${c.cliente}</h3>
+            <p><i class="fas fa-map-marker-alt"></i> ${c.indirizzo}</p>
+            <p><i class="fas fa-phone"></i> ${c.telefono}</p>
+            <div class="azioni-scheda">
+                <a href="tel:${c.telefono}" class="btn-azione btn-tel">
+                    <i class="fas fa-phone"></i> Chiama
+                </a>
+                <a href="${mapUrl}" target="_blank" class="btn-azione btn-map">
+                    <i class="fas fa-route"></i> Naviga
+                </a>
+                <button onclick="apriDettagli('${c.cliente}')" class="btn-azione" style="background:#eee; color:#333;">
+                    <i class="fas fa-info-circle"></i> Dettagli
+                </button>
+            </div>
+        `;
+        listaDiv.appendChild(scheda);
+    });
+}
+
+// Funzione per la barra di ricerca
+function filtraClienti() {
+    const testo = document.getElementById('cerca-cliente').value.toLowerCase();
+    const filtrati = tuttiIClienti.filter(c => 
+        c.cliente.toLowerCase().includes(testo)
+    );
+    renderizzaLista(filtrati);
+}
+
+function apriDettagli(nome) {
+    alert("Dettagli per " + nome + " in arrivo nel prossimo step!");
 }
