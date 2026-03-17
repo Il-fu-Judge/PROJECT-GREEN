@@ -15,8 +15,22 @@
             <button onclick="mostraPagina('nuovo-cliente')" class="btn-main">
                 <i class="fas fa-user-plus"></i> Nuovo Cliente
             </button>
-            <button onclick="alert('Pagina in costruzione')" class="btn-main secondary">
-                <i class="fas fa-users-cog"></i> Gestisci Cliente
+            <button onclick="apriGestione()" class="btn-main secondary">
+    <i class="fas fa-users-cog"></i> Gestisci Cliente
+</button>
+
+<div id="gestione-cliente" class="view hidden">
+    <button onclick="mostraPagina('home')" class="btn-back">← Torna alla Home</button>
+    <h2>I Tuoi Clienti</h2>
+    
+    <div class="input-group">
+        <input type="text" id="cerca-cliente" placeholder="Cerca per nome..." onkeyup="filtraClienti()">
+    </div>
+
+    <div id="lista-clienti" class="lista-container">
+        <p class="caricamento">Caricamento database...</p>
+    </div>
+</div>
             </button>
         </div>
     </div>
