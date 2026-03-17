@@ -1,5 +1,5 @@
         // 1. CONFIGURAZIONE: Incolla qui l'URL della tua Web App di Google
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwDEC1oHTOUpdDT1_QZnYRBXSas3rqTnxkLSS7RNeLxGZp_u8fQ8VWmtWpGfj5WoO0Pag/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZwgDXrBR-_zpNNd69wO0BlGhy4LIRbKPwN7xxDTpn4UZAh30bpZYkg4GvBnEz30HO2w/exec";
 
 let recognition;
 
