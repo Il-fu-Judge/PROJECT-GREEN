@@ -210,6 +210,74 @@ function filtraClienti() {
     renderizzaLista(filtrati);
 }
 
+// --- NUOVA LOGICA GESTIONE INTERVENTI ---
+
+let clienteSelezionato = "";
+
+// Sostituisce la vecchia funzione che avevi in fondo
 function apriDettagli(nome) {
-    alert("Dettagli per " + nome + " in arrivo nel prossimo step!");
+    clienteSelezionato = nome;
+    document.getElementById('nome-cliente-titolo').innerText = nome;
+    mostraPagina('scheda-cliente');
+    
+    // Per ora mostriamo un messaggio vuoto (nel prossimo step scaricheremo i dati veri)
+    document.getElementById('lista-interventi').innerHTML = '<p style="text-align:center; padding:20px; color:#666;">Nessun intervento registrato per questo cliente.</p>';
+}
+
+function nuovoIntervento() {
+    mostraPagina('editor-intervento');
+    document.getElementById('righe-intervento').innerHTML = ''; // Pulisce interventi precedenti
+    document.getElementById('data-intervento').valueAsDate = new Date(); // Imposta data odierna
+    document.getElementById('status-intervento').value = "Da Fare";
+    
+    // Aggiunge la prima riga vuota automaticamente
+    aggiungiRigaLavoro();
+}
+
+function aggiungiRigaLavoro() {
+    const container = document.getElementById('righe-intervento');
+    const div = document.createElement('div');
+    div.className = 'riga-lavoro';
+    
+    // Struttura con i 3 campi richiesti + tasto elimina
+    div.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <input type="text" class="campo-lavoro" placeholder="Intervento (es. Endoterapia)">
+            <input type="text" class="campo-pianta" placeholder="Pianta (es. Juglans Regia)">
+            <textarea class="campo-note" placeholder="Note (es. Antifungino)" rows="2" style="width:100%; border:none; border-bottom:1px solid #eee; font-family:inherit;"></textarea>
+        </div>
+        <button onclick="this.parentElement.remove()" style="position:absolute; top:5px; right:5px; background:none; border:none; color:#d32f2f; font-size:18px;">
+            <i class="fas fa-minus-circle"></i>
+        </button>
+    `;
+    container.appendChild(div);
+}
+
+async function salvaIntervento() {
+    const data = document.getElementById('data-intervento').value;
+    const status = document.getElementById('status-intervento').value;
+    const righe = document.querySelectorAll('.riga-lavoro');
+    
+    let dettagliIntervento = [];
+
+    righe.forEach(r => {
+        const lavoro = r.querySelector('.campo-lavoro').value;
+        const pianta = r.querySelector('.campo-pianta').value;
+        const note = r.querySelector('.campo-note').value;
+        
+        if(lavoro || pianta) {
+            dettagliIntervento.push({ lavoro, pianta, note });
+        }
+    });
+
+    if (dettagliIntervento.length === 0) {
+        alert("Aggiungi almeno un'azione all'intervento.");
+        return;
+    }
+
+    console.log("Salvataggio per:", clienteSelezionato);
+    console.log("Dati:", { data, status, dettagliIntervento });
+
+    alert("Dati pronti per il database! (Prossimo step: collegamento Google Sheets)");
+    mostraPagina('scheda-cliente');
 }
