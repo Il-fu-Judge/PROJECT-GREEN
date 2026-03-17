@@ -236,19 +236,38 @@ function nuovoIntervento() {
 
 function aggiungiRigaLavoro() {
     const container = document.getElementById('righe-intervento');
+    const rigaId = Date.now(); // ID unico per i campi vocali
     const div = document.createElement('div');
     div.className = 'riga-lavoro';
     
-    // Struttura con i 3 campi richiesti + tasto elimina
     div.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-            <input type="text" class="campo-lavoro" placeholder="Intervento (es. Endoterapia)">
-            <input type="text" class="campo-pianta" placeholder="Pianta (es. Juglans Regia)">
-            <textarea class="campo-note" placeholder="Note (es. Antifungino)" rows="2" style="width:100%; border:none; border-bottom:1px solid #eee; font-family:inherit;"></textarea>
-        </div>
-        <button onclick="this.parentElement.remove()" style="position:absolute; top:5px; right:5px; background:none; border:none; color:#d32f2f; font-size:18px;">
-            <i class="fas fa-minus-circle"></i>
+        <button onclick="this.parentElement.remove()" style="position:absolute; top:10px; right:10px; background:none; border:none; color:#d32f2f;">
+            <i class="fas fa-trash-alt"></i>
         </button>
+
+        <div class="mini-input-group">
+            <label>Tipo Intervento</label>
+            <div class="campo-intervento-row">
+                <input type="text" id="int-${rigaId}" placeholder="es. Potatura">
+                <button onclick="avviaVocale('int-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button>
+            </div>
+        </div>
+
+        <div class="mini-input-group">
+            <label>Pianta</label>
+            <div class="campo-intervento-row">
+                <input type="text" id="pianta-${rigaId}" placeholder="es. Juglans Regia">
+                <button onclick="avviaVocale('pianta-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button>
+            </div>
+        </div>
+
+        <div class="mini-input-group">
+            <label>Note</label>
+            <div class="campo-intervento-row">
+                <textarea id="note-${rigaId}" placeholder="Dettagli..."></textarea>
+                <button onclick="avviaVocale('note-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button>
+            </div>
+        </div>
     `;
     container.appendChild(div);
 }
