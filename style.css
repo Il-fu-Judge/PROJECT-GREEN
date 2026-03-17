@@ -190,22 +190,48 @@ input:focus { border-color: var(--primary); }
     cursor: pointer;
 }
 
-/* Barra di ricerca larga e centrata */
-#cerca-cliente {
+/* Barra di ricerca corretta */
+.search-container {
     width: 100%;
-    max-width: 500px;
-    padding: 15px;
-    border-radius: 25px; /* Arrotondata stile contatti */
-    border: 1px solid #ddd;
-    font-size: 16px;
-    margin: 10px auto 20px auto;
-    display: block;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    padding: 0 15px; /* Spazio dai bordi dello schermo */
+    box-sizing: border-box; /* Impedisce alla barra di sbordare */
 }
 
-/* Container della ricerca per centrarla bene */
-.search-container {
-    padding: 0 10px;
+#cerca-cliente {
     width: 100%;
-    box-sizing: border-box;
+    padding: 15px;
+    border-radius: 25px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    margin: 10px 0 20px 0;
+    box-sizing: border-box; /* Fondamentale per non sbordare */
+    display: block;
 }
+
+/* Pulsanti Home Flottanti */
+.btn-home-float {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    color: white;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-home-float:active {
+    transform: scale(0.9);
+}
+
+/* Colori specifici per le pagine */
+.bg-blu { background-color: #0d47a1; }   /* Per Gestione */
+.bg-verde { background-color: #2e7d32; } /* Per Nuovo Cliente */
