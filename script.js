@@ -129,7 +129,8 @@ function renderizzaLista(lista) {
     listaDiv.innerHTML = '';
     
     lista.forEach(c => {
-        const mapUrl = c.gps ? `http://www.google.com/maps?q=${c.gps}` : `http://www.google.com/maps?q=${encodeURIComponent(c.indirizzo)}`;
+        // Fix URL Mappe: corrette parentesi graffe ${}
+        const mapUrl = c.gps ? `https://www.google.com/maps/search/?api=1&query=${c.gps}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.indirizzo)}`;
         const scheda = document.createElement('div');
         scheda.className = 'scheda-cliente';
         scheda.innerHTML = `
@@ -187,7 +188,7 @@ function apriDettagli(nome) {
         let elenco = info.righe.map(r => `<li><b>${r.lavoro}</b> su ${r.pianta}</li>`).join('');
         const statusClass = isCompletato ? "status-completato" : "status-da-fare";
 
-        // Variabili pulite per evitare errori con gli apostrofi nel tasto calendario
+        // Pulizia apostrofi per i parametri della funzione calendario
         const lavS = info.righe[0].lavoro.replace(/'/g, "\\'");
         const piaS = info.righe[0].pianta.replace(/'/g, "\\'");
         const notS = (info.righe[0].note || "").replace(/'/g, "\\'");
@@ -235,14 +236,11 @@ function aggiungiRigaLavoro() {
     container.appendChild(div);
 }
 
-// Funzione per rientrare in modalità editing
 function caricaInterventoPerModifica(dataOriginale) {
     const interventiData = tuttiGliInterventi.filter(i => i.cliente === clienteSelezionato && i.data === dataOriginale);
     if (interventiData.length === 0) return;
 
     mostraPagina('editor-intervento');
-    
-    // FORMATTAZIONE DATA PER INPUT HTML (AAAA-MM-GG)
     const d = new Date(dataOriginale);
     const dataFormattata = d.getFullYear() + '-' + 
                            String(d.getMonth() + 1).padStart(2, '0') + '-' + 
@@ -264,7 +262,6 @@ function caricaInterventoPerModifica(dataOriginale) {
     });
 }
 
-// Funzione Salva Intervento (Corretta per navigazione)
 async function salvaIntervento() {
     const btn = document.querySelector('#editor-intervento .btn-save');
     const righe = document.querySelectorAll('.riga-lavoro');
@@ -274,91 +271,16 @@ async function salvaIntervento() {
         const lavoro = r.querySelector('.in-lavoro').value;
         const pianta = r.querySelector('.in-pianta').value;
         const note = r.querySelector('.in-note').value;
-        // Salviamo solo se c'è almeno il lavoro o la pianta compilata
         if(lavoro.trim() !== "" || pianta.trim() !== "") {
             dettagli.push({ lavoro, pianta, note });
         }
     });
     
     if (dettagli.length === 0) { 
-        alert("Inserisci almeno un dettaglio o usa il cestino per eliminare l'intero intervento."); 
+        alert("Inserisci almeno un dettaglio."); 
         return; 
     }
     
     const payload = {
         tipo: "NUOVO_INTERVENTO",
-        cliente: clienteSelezionato,
-        data: document.getElementById('data-intervento').value,
-        status: document.getElementById('status-intervento').value,
-        dettagli: dettagli
-    };
-
-    btn.innerText = "AGGIORNAMENTO DATABASE..."; 
-    btn.disabled = true;
-
-    try {
-        // Invio dati
-        await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        
-        // ASPETTA UN SECONDO: Diamo tempo a Google di scrivere
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // RICARICA TUTTO DAL SERVER PER ESSERE SICURI
-        const response = await fetch(WEB_APP_URL);
-        const data = await response.json();
-        tuttiGliInterventi = data.interventi || [];
-        
-        alert("Intervento aggiornato con successo!");
-        apriDettagli(clienteSelezionato);
-    } catch (e) { 
-        alert("Errore durante l'aggiornamento. Riprova."); 
-    } finally { 
-        btn.innerText = "SALVA INTERVENTO"; 
-        btn.disabled = false; 
-    }
-}
-
-// Funzione per eliminare (Corretta per navigazione)
-async function eliminaIntervento(dataDaEliminare) {
-    if (confirm("Sei sicuro di voler cancellare questo intervento?")) {
-        const payload = {
-            tipo: "ELIMINA_INTERVENTO",
-            cliente: clienteSelezionato,
-            data: dataDaEliminare
-        };
-        
-        try {
-            await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            alert("Intervento eliminato.");
-            
-            // Aggiorna dati locali e rimani sul cliente
-            tuttiGliInterventi = tuttiGliInterventi.filter(i => !(i.cliente === clienteSelezionato && i.data === dataDaEliminare));
-            apriDettagli(clienteSelezionato);
-        } catch (e) { alert("Errore durante l'eliminazione."); }
-    }
-}
-
-async function inviaACalendario(dataIntervento, lavoro, piante, note) {
-    // Cerchiamo i dati del cliente attuale per avere indirizzo e GPS
-    const infoCliente = tuttiIClienti.find(c => c.cliente === clienteSelezionato);
-    
-    const payload = {
-        tipo: "AGGIUNGI_CALENDARIO",
-        cliente: clienteSelezionato,
-        data: dataIntervento,
-        lavoro: lavoro,
-        piante: piante,
-        note: note,
-        indirizzo: infoCliente ? infoCliente.indirizzo : "",
-        gps: infoCliente ? infoCliente.gps : ""
-    };
-
-    try {
-        // Mostriamo un feedback veloce
-        alert("Invio al calendario in corso...");
-        await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        alert("Intervento aggiunto al Calendario!");
-    } catch (e) {
-        alert("Errore nell'invio al calendario.");
-    }
-}
+        cliente: clienteSelez
