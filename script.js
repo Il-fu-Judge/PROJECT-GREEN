@@ -259,14 +259,21 @@ async function salvaIntervento() {
     const btn = document.querySelector('#editor-intervento .btn-save');
     const righe = document.querySelectorAll('.riga-lavoro');
     let dettagli = [];
+    
     righe.forEach(r => {
         const lavoro = r.querySelector('.in-lavoro').value;
         const pianta = r.querySelector('.in-pianta').value;
         const note = r.querySelector('.in-note').value;
-        if(lavoro || pianta) dettagli.push({ lavoro, pianta, note });
+        // Salviamo solo se c'è almeno il lavoro o la pianta compilata
+        if(lavoro.trim() !== "" || pianta.trim() !== "") {
+            dettagli.push({ lavoro, pianta, note });
+        }
     });
     
-    if (dettagli.length === 0) { alert("Inserisci almeno un lavoro."); return; }
+    if (dettagli.length === 0) { 
+        alert("Inserisci almeno un dettaglio o usa il cestino per eliminare l'intero intervento."); 
+        return; 
+    }
     
     const payload = {
         tipo: "NUOVO_INTERVENTO",
@@ -276,18 +283,29 @@ async function salvaIntervento() {
         dettagli: dettagli
     };
 
-    btn.innerText = "SALVATAGGIO..."; btn.disabled = true;
+    btn.innerText = "AGGIORNAMENTO DATABASE..."; 
+    btn.disabled = true;
+
     try {
+        // Invio dati
         await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        alert("Intervento salvato!");
         
-        // Rinfresca i dati dal server e rimani sul cliente
+        // ASPETTA UN SECONDO: Diamo tempo a Google di scrivere
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // RICARICA TUTTO DAL SERVER PER ESSERE SICURI
         const response = await fetch(WEB_APP_URL);
         const data = await response.json();
         tuttiGliInterventi = data.interventi || [];
+        
+        alert("Intervento aggiornato con successo!");
         apriDettagli(clienteSelezionato);
-    } catch (e) { alert("Errore durante il salvataggio."); }
-    finally { btn.innerText = "SALVA INTERVENTO"; btn.disabled = false; }
+    } catch (e) { 
+        alert("Errore durante l'aggiornamento. Riprova."); 
+    } finally { 
+        btn.innerText = "SALVA INTERVENTO"; 
+        btn.disabled = false; 
+    }
 }
 
 // Funzione per eliminare (Corretta per navigazione)
