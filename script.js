@@ -129,7 +129,7 @@ function renderizzaLista(lista) {
     listaDiv.innerHTML = '';
     
     lista.forEach(c => {
-        // Fix URL Mappe: corrette parentesi graffe ${}
+        // CORRETTO: ${c.gps} e ${encodeURIComponent}
         const mapUrl = c.gps ? `https://www.google.com/maps/search/?api=1&query=${c.gps}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.indirizzo)}`;
         const scheda = document.createElement('div');
         scheda.className = 'scheda-cliente';
@@ -188,7 +188,6 @@ function apriDettagli(nome) {
         let elenco = info.righe.map(r => `<li><b>${r.lavoro}</b> su ${r.pianta}</li>`).join('');
         const statusClass = isCompletato ? "status-completato" : "status-da-fare";
 
-        // Pulizia apostrofi per i parametri della funzione calendario
         const lavS = info.righe[0].lavoro.replace(/'/g, "\\'");
         const piaS = info.righe[0].pianta.replace(/'/g, "\\'");
         const notS = (info.righe[0].note || "").replace(/'/g, "\\'");
@@ -283,4 +282,69 @@ async function salvaIntervento() {
     
     const payload = {
         tipo: "NUOVO_INTERVENTO",
-        cliente: clienteSelez
+        cliente: clienteSelezionato,
+        data: document.getElementById('data-intervento').value,
+        status: document.getElementById('status-intervento').value,
+        dettagli: dettagli
+    };
+
+    btn.innerText = "AGGIORNAMENTO..."; 
+    btn.disabled = true;
+
+    try {
+        await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await fetch(WEB_APP_URL);
+        const data = await response.json();
+        tuttiGliInterventi = data.interventi || [];
+        alert("Intervento aggiornato!");
+        apriDettagli(clienteSelezionato);
+    } catch (e) { 
+        alert("Errore salvataggio."); 
+    } finally { 
+        btn.innerText = "SALVA INTERVENTO"; 
+        btn.disabled = false; 
+    }
+}
+
+async function eliminaIntervento(dataDaEliminare) {
+    if (confirm("Sei sicuro di voler cancellare questo intervento?")) {
+        const payload = {
+            tipo: "ELIMINA_INTERVENTO",
+            cliente: clienteSelezionato,
+            data: dataDaEliminare
+        };
+        try {
+            await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            alert("Intervento eliminato.");
+            tuttiGliInterventi = tuttiGliInterventi.filter(i => !(i.cliente === clienteSelezionato && i.data === dataDaEliminare));
+            apriDettagli(clienteSelezionato);
+        } catch (e) { alert("Errore eliminazione."); }
+    }
+}
+
+async function inviaACalendario(dataIntervento, lavoro, piante, note) {
+    const infoCliente = tuttiIClienti.find(c => c.cliente === clienteSelezionato);
+    
+    const payload = {
+        tipo: "AGGIUNGI_CALENDARIO",
+        cliente: clienteSelezionato,
+        data: dataIntervento,
+        lavoro: lavoro,
+        pianta: piante,
+        note: note,
+        indirizzo: infoCliente ? infoCliente.indirizzo : "",
+        gps: infoCliente ? infoCliente.gps : ""
+    };
+
+    try {
+        await fetch(WEB_APP_URL, { 
+            method: 'POST', 
+            mode: 'no-cors', // Usiamo no-cors per evitare blocchi del browser
+            body: JSON.stringify(payload) 
+        });
+        alert("Richiesta inviata. Controlla il calendario tra pochi secondi.");
+    } catch (e) {
+        alert("Errore nell'invio.");
+    }
+}
