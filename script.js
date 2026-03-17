@@ -1,4 +1,4 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZwgDXrBR-_zpNNd69wO0BlGhy4LIRbKPwN7xxDTpn4UZAh30bpZYkg4GvBnEz30HO2w/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz_QpIHSYl_zDtzUAR6dHRy8AqC-_nx3HUTpuZPmucM1NBxmwQtq_PXi6y93Nesc-4Raw/exec";
 
 let recognition;
 
