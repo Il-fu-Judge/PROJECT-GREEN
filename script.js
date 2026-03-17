@@ -1,51 +1,74 @@
-        // 1. CONFIGURAZIONE: Incolla qui l'URL della tua Web App di Google
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZwgDXrBR-_zpNNd69wO0BlGhy4LIRbKPwN7xxDTpn4UZAh30bpZYkg4GvBnEz30HO2w/exec";
 
 let recognition;
 
-// Navigazione tra le pagine
 function mostraPagina(id) {
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
 }
 
-// LOGICA GPS OTTIMIZZATA
+// MICROFONO
+function avviaVocale(campoId) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert("Browser non supportato");
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'it-IT';
+    
+    document.getElementById('status-vocale').classList.remove('hidden');
+
+    recognition.onresult = (event) => {
+        document.getElementById(campoId).value = event.results[0][0].transcript;
+    };
+
+    recognition.onend = () => {
+        document.getElementById('status-vocale').classList.add('hidden');
+    };
+
+    recognition.start();
+}
+
+function stopVocale() {
+    if (recognition) recognition.stop();
+    document.getElementById('status-vocale').classList.add('hidden');
+}
+
+// GPS PULITO
 function ottieniPosizione() {
     const btnPos = document.querySelector('.fa-crosshairs').parentElement;
-    const iconaOriginale = btnPos.innerHTML;
     btnPos.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
     navigator.geolocation.getCurrentPosition(async (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
-        document.getElementById('gps-coords').value = lat + "," + lon;
+        document.getElementById('gps-coords').value = `${lat},${lon}`;
 
         try {
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
             const data = await res.json();
-            
-            // Estraiamo solo i pezzi che ti servono
             const a = data.address;
-            const via = a.road || "";
-            const civico = a.house_number || "";
-            const paese = a.village || a.town || a.hamlet || ""; // Comune o frazione
-            const citta = a.city || a.county || ""; // Città o provincia
-
-            const indirizzoPulito = `${via} ${civico}, ${paese} ${citta}`.replace(/^ ,/, '').trim();
-            document.getElementById('indirizzo').value = indirizzoPulito;
             
+            // Costruzione indirizzo semplificato
+            const via = a.road || "";
+            const civ = a.house_number ? " " + a.house_number : "";
+            const loc = a.village || a.town || a.city || "";
+            
+            document.getElementById('indirizzo').value = `${via}${civ}, ${loc}`.trim().replace(/^,/, '');
         } catch (e) {
-            alert("Coordinate GPS salvate, ma errore nel tradurre l'indirizzo.");
+            alert("GPS ok, errore nome via");
         } finally {
-            btnPos.innerHTML = iconaOriginale;
+            btnPos.innerHTML = '<i class="fas fa-crosshairs"></i>';
         }
-    }, (error) => {
-        alert("Attiva il GPS per usare questa funzione.");
-        btnPos.innerHTML = iconaOriginale;
-    }, { timeout: 10000, enableHighAccuracy: true });
+    }, () => {
+        alert("Attiva il GPS");
+        btnPos.innerHTML = '<i class="fas fa-crosshairs"></i>';
+    });
 }
 
-// LOGICA SALVATAGGIO (Status e Data vuoti)
+// SALVATAGGIO
 async function salvaDati() {
     const btn = document.getElementById('btn-salva');
     const dati = {
@@ -55,9 +78,9 @@ async function salvaDati() {
         gps: document.getElementById('gps-coords').value
     };
 
-    if (!dati.cliente) { alert("Il nome cliente è obbligatorio."); return; }
+    if (!dati.cliente) { alert("Manca il nome!"); return; }
 
-    btn.innerText = "INVIO IN CORSO...";
+    btn.innerText = "SALVATAGGIO...";
     btn.disabled = true;
 
     try {
@@ -66,13 +89,11 @@ async function salvaDati() {
             mode: 'no-cors',
             body: JSON.stringify(dati)
         });
-
-        alert("Salvato correttamente!");
+        alert("Salvato!");
         document.querySelectorAll('input').forEach(i => i.value = "");
         mostraPagina('home');
-
     } catch (e) {
-        alert("Errore invio.");
+        alert("Errore");
     } finally {
         btn.innerText = "SALVA NEL DATABASE";
         btn.disabled = false;
