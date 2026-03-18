@@ -279,8 +279,13 @@ function caricaInterventoPerModifica(dataOriginale) {
 async function salvaIntervento() {
     const btn = document.querySelector('#editor-intervento .btn-save');
     const righe = document.querySelectorAll('.riga-lavoro');
-    let dettagli = [];
     
+    // Recuperiamo i dati generali
+    const dataIntervento = document.getElementById('data-intervento').value;
+    const oraIntervento = document.getElementById('ora-intervento').value; // <--- NUOVO
+    const statusIntervento = document.getElementById('status-intervento').value;
+    
+    let dettagli = [];
     righe.forEach(r => {
         const lavoro = r.querySelector('.in-lavoro').value;
         const pianta = r.querySelector('.in-pianta').value;
@@ -289,17 +294,15 @@ async function salvaIntervento() {
             dettagli.push({ lavoro, pianta, note });
         }
     });
-    
-    if (dettagli.length === 0) { 
-        alert("Inserisci almeno un dettaglio."); 
-        return; 
-    }
-    
+
+    if (dettagli.length === 0) { alert("Inserisci almeno un dettaglio."); return; }
+
     const payload = {
         tipo: "NUOVO_INTERVENTO",
         cliente: clienteSelezionato,
-        data: document.getElementById('data-intervento').value,
-        status: document.getElementById('status-intervento').value,
+        data: dataIntervento,
+        ora: oraIntervento, // <--- INVIO L'ORA AL DATABASE
+        status: statusIntervento,
         dettagli: dettagli
     };
 
