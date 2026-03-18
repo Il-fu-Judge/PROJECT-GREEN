@@ -396,9 +396,14 @@ function aggiornaContatoreLavori() {
     }
 
     contenitore.onscroll = function() {
-        let index = Math.round(this.scrollTop / this.offsetHeight);
-        if (contatoreTop && !isNaN(index)) {
-            contatoreTop.innerText = `${index + 1} / ${totale}`;
+        // Calcola l'indice basandosi sull'altezza della singola riga
+        const primaRiga = contenitore.querySelector('.riga-lavoro');
+        if (primaRiga) {
+            const altezzaRiga = primaRiga.offsetHeight + 20; // altezza + margin
+            let index = Math.round(this.scrollTop / altezzaRiga);
+            if (contatoreTop && !isNaN(index)) {
+                contatoreTop.innerText = `${Math.min(index + 1, totale)} / ${totale}`;
+            }
         }
     };
 }
