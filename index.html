@@ -75,46 +75,51 @@
         </button>
     </div>
 
-<div id="editor-intervento" class="view hidden" style="height: 100vh; display: flex; flex-direction: column; padding: 10px; box-sizing: border-box; overflow: hidden;">
+<div id="editor-intervento" class="view hidden" style="height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: var(--bg);">
     
-    <div class="editor-header" style="flex-shrink: 0; background: var(--bg); padding-bottom: 10px; border-bottom: 2px solid #c8e6c9;">
-        <h2 style="margin: 0 0 10px 0; font-size: 1.1rem;">Dettaglio Lavoro</h2>
-        <div style="display: flex; gap: 8px;">
-            <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
-                <label style="font-size: 10px; margin:0;">DATA</label>
-                <input type="date" id="data-intervento" style="padding: 8px; font-size: 14px; width: 100%; box-sizing: border-box;">
-                <div style="display: flex; align-items: center; gap: 5px; margin-top: 5px;">
-                    <span style="font-size: 10px; font-weight: bold; color: var(--primary);">SCHEDA:</span>
-                    <div id="contatore-lavori" style="color: var(--primary); font-weight: bold; font-size: 16px;">1 / 1</div>
+    <div class="editor-header" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 15px; border-bottom: 2px solid #c8e6c9; background: var(--bg); z-index: 10;">
+        <h2 style="margin: 0 0 15px 0; font-size: 1.2rem; text-align: center;">Dettaglio Lavoro</h2>
+        <div style="display: flex; gap: 10px; width: 100%; max-width: 450px; margin: 0 auto;">
+            <div style="flex: 1;">
+                <label style="font-size: 10px; font-weight: bold;">DATA</label>
+                <input type="date" id="data-intervento" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;">
+                <div style="display: flex; align-items: center; gap: 5px; margin-top: 8px;">
+                    <span style="font-size: 11px; font-weight: bold; color: var(--primary);">SCHEDA:</span>
+                    <div id="contatore-lavori" style="color: var(--primary); font-weight: bold; font-size: 18px;">1 / 1</div>
                 </div>
             </div>
-            <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
-                <label style="font-size: 10px; margin:0;">ORA</label>
-                <input type="time" id="ora-intervento" style="padding: 8px; font-size: 14px; width: 100%; box-sizing: border-box;">
-                <label style="font-size: 10px; margin:0;">STATUS</label>
-                <select id="status-intervento" style="padding: 8px; font-size: 14px; width: 100%; box-sizing: border-box;">
-                    <option value="Da Fare">Da Fare</option>
-                    <option value="Completato">Completato</option>
-                </select>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                <div>
+                    <label style="font-size: 10px; font-weight: bold;">ORA</label>
+                    <input type="time" id="ora-intervento" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;">
+                </div>
+                <div>
+                    <label style="font-size: 10px; font-weight: bold;">STATUS</label>
+                    <select id="status-intervento" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; background: white;">
+                        <option value="Da Fare">Da Fare</option>
+                        <option value="Completato">Completato</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="righe-intervento" class="scroll-snap-container" style="flex-grow: 1; overflow-y: auto; scroll-snap-type: y mandatory; display: flex; flex-direction: column; align-items: center;">
+    <div id="righe-intervento" class="scroll-snap-container" style="height: 380px; flex-shrink: 0; overflow-y: auto; scroll-snap-type: y mandatory; display: flex; flex-direction: column; align-items: center; padding: 10px 0;">
         </div>
 
-    <div class="editor-footer" style="flex-shrink: 0; padding-top: 15px; border-top: 1px solid #ddd; background: var(--bg);">
-        <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 15px;">
-            <button onclick="mostraPagina('scheda-cliente')" class="btn-icon" style="background: var(--secondary); width: 55px; height: 55px; border-radius: 50%; font-size: 20px;">
+    <div class="editor-footer" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding: 20px 15px; border-top: 1px solid #ddd; background: var(--bg); z-index: 10;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 20px;">
+            <button onclick="mostraPagina('scheda-cliente')" class="btn-icon" style="background: var(--secondary); width: 60px; height: 60px; border-radius: 50%; border: none; color: white; font-size: 22px; cursor: pointer;">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <button onclick="aggiungiRigaLavoro()" class="btn-icon" style="background: var(--primary); width: 55px; height: 55px; border-radius: 50%; font-size: 20px;">
+            <button onclick="aggiungiRigaLavoro()" class="btn-icon" style="background: var(--primary); width: 60px; height: 60px; border-radius: 50%; border: none; color: white; font-size: 22px; cursor: pointer;">
                 <i class="fas fa-plus"></i>
             </button>
         </div>
-        <button onclick="salvaIntervento()" class="btn-save" style="margin: 0; width: 100%; padding: 16px; font-size: 18px;">SALVA INTERVENTO</button>
+        <button onclick="salvaIntervento()" class="btn-save" style="width: 100%; max-width: 450px; margin: 0 auto; padding: 18px; font-size: 18px; font-weight: bold;">SALVA INTERVENTO</button>
     </div>
 </div>
+
     <div id="status-vocale" class="status-box hidden">
         <i class="fas fa-microphone fa-3x" style="color: #d32f2f; margin-bottom: 20px;"></i>
         <p style="font-size: 20px; font-weight: bold;">Ti sto ascoltando...</p>
