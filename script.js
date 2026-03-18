@@ -1,5 +1,5 @@
 // 1. CONFIGURAZIONE
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBsPgtrKgUAnFfezXCY3-dK2UJvqCfsWhYfTPFHaPoXKKdurSJe_lOfPMIOfpS60Bp2g/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzwG89iXCulcB_aDOyOstiUMYuI2CtYLdpK840eQUbW_OregmibcXfxeJSpO3k4xl7Tug/exec";
 
 let recognition;
 let tuttiIClienti = [];
