@@ -339,25 +339,28 @@ async function eliminaIntervento(dataDaEliminare) {
 }
 
 async function inviaACalendario(dataIntervento, lavoro, piante, note) {
-    const inputOra = document.getElementById('ora-intervento');
-    const ora = inputOra && inputOra.value ? inputOra.value : "08:00";
+    // 1. Leggiamo la data direttamente dall'input HTML per essere sicuri che sia TESTO puro
+    const dataDalCampo = document.getElementById('data-intervento').value; // Restituisce "YYYY-MM-DD"
+    const oraDalCampo = document.getElementById('ora-intervento').value || "08:00";
 
-    // Prendiamo solo la parte YYYY-MM-DD ignorando tutto il resto
-    let dataPulita = dataIntervento.split("T")[0];
+    if (!dataDalCampo) {
+        alert("Seleziona prima una data.");
+        return;
+    }
 
-    // Componiamo la stringa ISO Locale SENZA la "Z" finale
-    // Esempio: "2026-03-18T09:30:00"
-    const dataOraCompleta = `${dataPulita}T${ora}:00`;
+    // 2. Componiamo la stringa senza passare per oggetti Date di Javascript
+    // Risultato esatto: "2026-03-18T09:30:00"
+    const dataOraCompleta = `${dataDalCampo}T${oraDalCampo}:00`;
+
+    // 3. ALERT DI CONTROLLO (Verifichiamo che dica la data giusta)
+    alert("Sto inviando al database: " + dataOraCompleta);
 
     const infoCliente = tuttiIClienti.find(c => c.cliente === clienteSelezionato);
     
-    // Messaggio di conferma con la data corretta per sicurezza
-    alert(`Invio al calendario: ${lavoro} il ${dataPulita} alle ${ora}`);
-
     const payload = {
         tipo: "AGGIUNGI_CALENDARIO",
         cliente: clienteSelezionato,
-        data: dataOraCompleta, // Ora passerà esattamente come scritta
+        data: dataOraCompleta,
         lavoro: lavoro || "Intervento",
         pianta: piante || "-",
         note: note || "-",
@@ -366,10 +369,13 @@ async function inviaACalendario(dataIntervento, lavoro, piante, note) {
     };
 
     try {
-        await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-        alert("Salvato correttamente nel calendario!");
-    } catch (e) {
-        alert("Errore invio: " + e.message);
+        const response = await fetch(WEB_APP_URL, { 
+            method: 'POST', 
+            body: JSON.stringify(payload) 
+        });
+        alert("Operazione completata!");
+    } catch (e) { 
+        alert("Errore: " + e.message); 
     }
 }
 
