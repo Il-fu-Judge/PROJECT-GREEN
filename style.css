@@ -386,3 +386,26 @@ input:focus { border-color: var(--primary); }
 }
 
 .btn-delete { color: #d32f2f; }
+
+/* Rende fissa la parte superiore dell'editor */
+.editor-header {
+    position: sticky;
+    top: 0;
+    background-color: var(--bg); /* Usa lo sfondo dell'app per coprire ciò che scorre sotto */
+    z-index: 10;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #c8e6c9;
+    margin-bottom: 15px;
+}
+
+/* Contenitore per le azioni che deve scorrere */
+#righe-intervento {
+    flex-grow: 1;
+    overflow-y: visible; /* Lo scroll è gestito dal contenitore padre .view */
+}
+
+/* Assicurati che la vista dell'editor usi tutto lo spazio */
+#editor-intervento {
+    display: flex;
+    flex-direction: column;
+}
