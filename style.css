@@ -409,3 +409,33 @@ input:focus { border-color: var(--primary); }
     display: flex;
     flex-direction: column;
 }
+
+/* Container dello scorrimento */
+.scroll-snap-container {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; /* Per fluidità su iPhone */
+}
+
+/* La singola box di lavoro */
+.riga-lavoro {
+    scroll-snap-align: start; /* Aggancia l'inizio della box al bordo alto */
+    scroll-snap-stop: always;  /* Obbliga il fermo su ogni box */
+    background: white;
+    padding: 15px !important;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+    min-height: 280px; /* Altezza minima per farla stare bene in vista */
+}
+
+/* Compattiamo gli input interni alle box */
+.mini-input-group {
+    margin-bottom: 8px !important;
+}
+
+.campo-intervento-row input, 
+.campo-intervento-row textarea {
+    padding: 10px !important;
+    font-size: 15px !important;
+}
