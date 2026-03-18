@@ -324,27 +324,33 @@ async function eliminaIntervento(dataDaEliminare) {
 }
 
 async function inviaACalendario(dataIntervento, lavoro, piante, note) {
+    // 1. Recupero info cliente (per indirizzo e GPS)
     const infoCliente = tuttiIClienti.find(c => c.cliente === clienteSelezionato);
     
+    // 2. Messaggio di conferma visivo
+    alert("Invio al calendario: " + (lavoro || "Intervento") + " del " + dataIntervento);
+
     const payload = {
         tipo: "AGGIUNGI_CALENDARIO",
         cliente: clienteSelezionato,
         data: dataIntervento,
-        lavoro: lavoro,
-        pianta: piante,
-        note: note,
+        lavoro: lavoro || "Intervento", // Evita che sia vuoto
+        pianta: piante || "-",
+        note: note || "-",
         indirizzo: infoCliente ? infoCliente.indirizzo : "",
         gps: infoCliente ? infoCliente.gps : ""
     };
 
     try {
-        await fetch(WEB_APP_URL, { 
+        // Rimuoviamo temporaneamente 'no-cors' per vedere se il browser ci segnala errori
+        const response = await fetch(WEB_APP_URL, { 
             method: 'POST', 
-            mode: 'no-cors', // Usiamo no-cors per evitare blocchi del browser
             body: JSON.stringify(payload) 
         });
-        alert("Richiesta inviata. Controlla il calendario tra pochi secondi.");
-    } catch (e) {
-        alert("Errore nell'invio.");
+        
+        alert("Richiesta inviata! Controlla il calendario tra pochi secondi.");
+    } catch (e) { 
+        console.error("Errore invio:", e);
+        alert("Errore nell'invio: " + e.message); 
     }
 }
