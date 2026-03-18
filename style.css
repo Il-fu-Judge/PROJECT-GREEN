@@ -418,32 +418,37 @@ input:focus { border-color: var(--primary); }
 
 /* Container dello scorrimento */
 .scroll-snap-container {
-    height: 100%;
+    width: 100%;
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; /* Per fluidità su iPhone */
+    padding-top: 20px; /* Spazio per staccare dalla testata */
 }
 
-/* La singola box di lavoro (Unita e pulita) */
 .riga-lavoro {
-    scroll-snap-align: start;
+    scroll-snap-align: center; /* Centra la box verticalmente nello spazio rimasto */
     scroll-snap-stop: always;
     background: white;
-    padding: 15px;
-    border-radius: 15px;
-    margin-bottom: 20px; /* Spazio tra le schede */
+    width: 95%; /* Leggermente più stretta per respirare dai bordi */
+    max-width: 400px;
+    margin-bottom: 100vh; /* Trucco per non vedere mai la box successiva mentre si guarda una */
+    padding: 20px;
+    border-radius: 20px;
     border: 1px solid #eee;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    position: relative; /* Necessario per il tasto elimina in alto a destra */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    flex-shrink: 0; /* Impedisce alla box di schiacciarsi */
 }
 
-/* Titolo interno alla box lavoro (Verde e pulito) */
+/* Rimuove l'ultimo margine per permettere lo scroll finale */
+.riga-lavoro:last-child {
+    margin-bottom: 20px;
+}
+
 .titolo-box-lavoro {
     color: var(--primary);
     font-weight: bold;
-    margin-bottom: 12px;
-    font-size: 14px;
+    margin-bottom: 15px;
+    font-size: 15px;
     border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+    padding-bottom: 8px;
     text-transform: uppercase;
 }
 
