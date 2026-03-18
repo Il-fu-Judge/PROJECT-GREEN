@@ -371,3 +371,34 @@ async function inviaACalendario(dataIntervento, lavoro, piante, note) {
         alert("Errore nell'invio: " + e.message); 
     }
 }
+
+function aggiornaContatoreLavori() {
+    const contenitore = document.getElementById('righe-intervento');
+    const righe = contenitore.querySelectorAll('.riga-lavoro');
+    const totale = righe.length;
+    const contatoreTop = document.getElementById('contatore-lavori');
+
+    righe.forEach((riga, index) => {
+        // Cerca se esiste già il titolo nella box, altrimenti lo crea
+        let titoloBox = riga.querySelector('.titolo-box-lavoro');
+        if (!titoloBox) {
+            titoloBox = document.createElement('div');
+            titoloBox.className = 'titolo-box-lavoro';
+            riga.prepend(titoloBox);
+        }
+        titoloBox.innerText = `LAVORO ${index + 1} DI ${totale}`;
+    });
+
+    // Aggiorna il numerino blu in alto a destra
+    if (contatoreTop) {
+        contatoreTop.innerText = `1 / ${totale}`;
+    }
+
+    // Effetto scorrimento: cambia il numero in alto mentre muovi il dito
+    contenitore.onscroll = function() {
+        let index = Math.round(this.scrollTop / this.offsetHeight);
+        if (contatoreTop) {
+            contatoreTop.innerText = `${index + 1} / ${totale}`;
+        }
+    };
+}
