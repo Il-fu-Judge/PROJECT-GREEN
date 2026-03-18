@@ -395,26 +395,28 @@ function aggiornaContatoreLavori() {
         contatoreTop.innerText = `1 / ${totale}`;
     }
 
+// Sostituisci solo la parte onscroll dentro aggiornaContatoreLavori
 contenitore.onscroll = function() {
-        const righe = contenitore.querySelectorAll('.riga-lavoro');
-        let index = 0;
-        let minDiff = Infinity;
+    const righe = contenitore.querySelectorAll('.riga-lavoro');
+    const contenitoreRect = contenitore.getBoundingClientRect();
+    const centroContenitore = contenitoreRect.top + (contenitoreRect.height / 2);
 
-        // Trova la riga più vicina al centro della visuale
-        righe.forEach((riga, i) => {
-            const rect = riga.getBoundingClientRect();
-            const centroContenitore = contenitore.getBoundingClientRect().top + (contenitore.offsetHeight / 2);
-            const centroRiga = rect.top + (rect.height / 2);
-            const diff = Math.abs(centroContenitore - centroRiga);
-            
-            if (diff < minDiff) {
-                minDiff = diff;
-                index = i;
-            }
-        });
+    let indexCorrente = 0;
+    let minDistanza = Infinity;
 
-        if (contatoreTop) {
-            contatoreTop.innerText = `${index + 1} / ${totale}`;
+    righe.forEach((riga, i) => {
+        const rigaRect = riga.getBoundingClientRect();
+        const centroRiga = rigaRect.top + (rigaRect.height / 2);
+        const distanza = Math.abs(centroContenitore - centroRiga);
+
+        if (distanza < minDistanza) {
+            minDistanza = distanza;
+            indexCorrente = i;
+        }
+    });
+
+    if (contatoreTop) {
+        contatoreTop.innerText = `${indexCorrente + 1} / ${totale}`;
         }
     };
 }
