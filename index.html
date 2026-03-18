@@ -77,38 +77,41 @@
 
 <div id="editor-intervento" class="view hidden" style="height: 100vh; display: flex; flex-direction: column; padding: 10px; box-sizing: border-box;">
     
-    <div class="editor-header" style="flex-shrink: 0; background: var(--bg); border-bottom: 2px solid #c8e6c9; padding-bottom: 10px;">
-        <button onclick="mostraPagina('scheda-cliente')" class="btn-home-float bg-blu" style="position: absolute; right: 10px; top: 10px; width: 45px; height: 45px; margin:0;">
-            <i class="fas fa-times"></i>
-        </button>
-        <h2 style="margin: 0 0 10px 0; font-size: 1.1rem; text-align: left;">Dettaglio Lavoro</h2>
-        
-        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+    <div class="editor-header" style="flex-shrink: 0; background: var(--bg); padding-bottom: 10px; border-bottom: 2px solid #c8e6c9;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+            <h2 id="titolo-editor" style="margin: 0; font-size: 1.1rem;">Dettaglio Lavoro</h2>
+            <div id="contatore-lavori" style="background: var(--secondary); color: white; padding: 2px 10px; border-radius: 10px; font-weight: bold; font-size: 14px;">1 / 1</div>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
             <div style="flex: 1;">
-                <label style="font-size: 11px; margin-bottom: 2px;">Data</label>
-                <input type="date" id="data-intervento" style="padding: 10px; margin:0; font-size: 14px;">
+                <label style="font-size: 10px; margin:0;">DATA</label>
+                <input type="date" id="data-intervento" style="padding: 8px; font-size: 14px;">
             </div>
-            <div style="flex: 1;">
-                <label style="font-size: 11px; margin-bottom: 2px;">Ora</label>
-                <input type="time" id="ora-intervento" style="padding: 10px; margin:0; font-size: 14px;">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
+                <div>
+                    <label style="font-size: 10px; margin:0;">ORA</label>
+                    <input type="time" id="ora-intervento" style="padding: 8px; font-size: 14px;">
+                </div>
+                <div>
+                    <label style="font-size: 10px; margin:0;">STATUS</label>
+                    <select id="status-intervento" style="padding: 8px; font-size: 14px; width: 100%;">
+                        <option value="Da Fare">Da Fare</option>
+                        <option value="Completato">Completato</option>
+                    </select>
+                </div>
             </div>
         </div>
-        
-        <label style="font-size: 11px; margin-bottom: 2px;">Status</label>
-        <select id="status-intervento" style="padding: 10px; margin:0; font-size: 14px; width: 100%; border-radius: 12px; border: 1px solid #c8e6c9;">
-            <option value="Da Fare">Da Fare</option>
-            <option value="Completato">Completato</option>
-        </select>
     </div>
 
-    <div id="righe-intervento" class="scroll-snap-container" style="flex-grow: 1; overflow-y: auto; scroll-snap-type: y mandatory; padding: 10px 0;">
+    <div id="righe-intervento" class="scroll-snap-container" style="flex-grow: 1; overflow-y: auto; scroll-snap-type: y mandatory; margin-top: 10px;">
         </div>
 
-    <div class="editor-footer" style="flex-shrink: 0; background: var(--bg); padding-top: 10px; border-top: 1px solid #ddd; text-align: center;">
-        <button onclick="aggiungiRigaLavoro()" class="btn-icon" style="width: 50px; height: 50px; border-radius: 50%; background: #2e7d32; color: white; margin: 0 auto 10px auto;">
+    <div class="editor-footer" style="flex-shrink: 0; padding-top: 10px; display: flex; align-items: center; gap: 10px;">
+        <button onclick="aggiungiRigaLavoro()" class="btn-icon" style="width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;">
             <i class="fas fa-plus"></i>
         </button>
-        <button onclick="salvaIntervento()" class="btn-save" style="margin: 0; padding: 15px; width: 100%;">SALVA INTERVENTO</button>
+        <button onclick="salvaIntervento()" class="btn-save" style="flex-grow: 1; margin: 0;">SALVA</button>
     </div>
 </div>
 
