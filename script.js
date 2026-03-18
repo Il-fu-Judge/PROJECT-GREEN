@@ -10,7 +10,9 @@ let clienteSelezionato = "";
 function mostraPagina(id) {
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     // Forza lo scroll all'inizio quando si apre l'editor
-    document.getElementById('righe-intervento').scrollTop = 0;
+    const righeCont = document.getElementById('righe-intervento');
+    if (righeCont) righeCont.scrollTop = 0;
+    
     const target = document.getElementById(id);
     if (target) {
         target.classList.remove('hidden');
@@ -131,7 +133,6 @@ function renderizzaLista(lista) {
     listaDiv.innerHTML = '';
     
     lista.forEach(c => {
-        // CORRETTO: ${c.gps} e ${encodeURIComponent}
         const mapUrl = c.gps ? `https://www.google.com/maps/search/?api=1&query=${c.gps}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.indirizzo)}`;
         const scheda = document.createElement('div');
         scheda.className = 'scheda-cliente';
@@ -230,11 +231,12 @@ function aggiungiRigaLavoro() {
     const div = document.createElement('div');
     div.className = 'riga-lavoro';
     div.innerHTML = `
-        <button onclick="this.parentElement.remove()" style="position:absolute; top:10px; right:10px; border:none; background:none; color:red;"><i class="fas fa-trash"></i></button>
+        <button onclick="this.parentElement.remove(); aggiornaContatoreLavori();" style="position:absolute; top:10px; right:10px; border:none; background:none; color:red;"><i class="fas fa-trash"></i></button>
         <div class="mini-input-group"><label>Lavoro</label><div class="campo-intervento-row"><input type="text" class="in-lavoro" id="l-${rigaId}"><button onclick="avviaVocale('l-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>
         <div class="mini-input-group"><label>Pianta</label><div class="campo-intervento-row"><input type="text" class="in-pianta" id="p-${rigaId}"><button onclick="avviaVocale('p-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>
         <div class="mini-input-group"><label>Note</label><div class="campo-intervento-row"><textarea class="in-note" id="n-${rigaId}"></textarea><button onclick="avviaVocale('n-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>`;
     container.appendChild(div);
+    aggiornaContatoreLavori();
 }
 
 function caricaInterventoPerModifica(dataOriginale) {
@@ -254,13 +256,24 @@ function caricaInterventoPerModifica(dataOriginale) {
     container.innerHTML = ''; 
 
     interventiData.forEach(r => {
-        aggiungiRigaLavoro();
-        const ultimeRighe = container.querySelectorAll('.riga-lavoro');
-        const ultima = ultimeRighe[ultimeRighe.length - 1];
-        ultima.querySelector('.in-lavoro').value = r.lavoro;
-        ultima.querySelector('.in-pianta').value = r.pianta;
-        ultima.querySelector('.in-note').value = r.note;
+        // Creazione manuale per evitare loop di aggiornamento contatore durante il caricamento
+        const rigaId = Math.random().toString(36).substr(2, 9);
+        const div = document.createElement('div');
+        div.className = 'riga-lavoro';
+        div.innerHTML = `
+            <button onclick="this.parentElement.remove(); aggiornaContatoreLavori();" style="position:absolute; top:10px; right:10px; border:none; background:none; color:red;"><i class="fas fa-trash"></i></button>
+            <div class="mini-input-group"><label>Lavoro</label><div class="campo-intervento-row"><input type="text" class="in-lavoro" id="l-${rigaId}"><button onclick="avviaVocale('l-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>
+            <div class="mini-input-group"><label>Pianta</label><div class="campo-intervento-row"><input type="text" class="in-pianta" id="p-${rigaId}"><button onclick="avviaVocale('p-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>
+            <div class="mini-input-group"><label>Note</label><div class="campo-intervento-row"><textarea class="in-note" id="n-${rigaId}"></textarea><button onclick="avviaVocale('n-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>`;
+        container.appendChild(div);
+        
+        div.querySelector('.in-lavoro').value = r.lavoro;
+        div.querySelector('.in-pianta').value = r.pianta;
+        div.querySelector('.in-note').value = r.note;
     });
+    
+    aggiornaContatoreLavori();
+    document.getElementById('righe-intervento').scrollTop = 0;
 }
 
 async function salvaIntervento() {
@@ -326,30 +339,23 @@ async function eliminaIntervento(dataDaEliminare) {
 }
 
 async function inviaACalendario(dataIntervento, lavoro, piante, note) {
-    // 1. Recupero l'orario dall'input (se non esiste o è vuoto, mettiamo 08:00 di default)
     const inputOra = document.getElementById('ora-intervento');
     const ora = inputOra && inputOra.value ? inputOra.value : "08:00";
 
-    // 2. Pulizia della data (prendiamo solo YYYY-MM-DD)
     let dataPulita = dataIntervento;
     if (dataPulita.includes("T")) {
         dataPulita = dataPulita.split("T")[0];
     }
 
-    // 3. Uniamo Data e Ora nel formato ISO locale (es. 2026-03-20T09:30:00)
-    // Usiamo l'ora locale senza la "Z" finale per evitare che Google la interpreti come UTC
     const dataOraCompleta = `${dataPulita}T${ora}:00`;
-
-    // 4. Recupero info cliente per indirizzo e GPS
     const infoCliente = tuttiIClienti.find(c => c.cliente === clienteSelezionato);
     
-    // Messaggio di conferma visivo
     alert("Invio al calendario: " + (lavoro || "Intervento") + " alle ore " + ora);
 
     const payload = {
         tipo: "AGGIUNGI_CALENDARIO",
         cliente: clienteSelezionato,
-        data: dataOraCompleta, // Inviamo la stringa con l'orario
+        data: dataOraCompleta,
         lavoro: lavoro || "Intervento",
         pianta: piante || "-",
         note: note || "-",
@@ -358,13 +364,10 @@ async function inviaACalendario(dataIntervento, lavoro, piante, note) {
     };
 
     try {
-        // Invio allo script
-        const response = await fetch(WEB_APP_URL, { 
+        await fetch(WEB_APP_URL, { 
             method: 'POST', 
-            // mode: 'no-cors', // Puoi rimetterlo se hai problemi di CORS, ma ora testiamo così
             body: JSON.stringify(payload) 
         });
-        
         alert("Intervento aggiunto con successo all'orario indicato!");
     } catch (e) { 
         console.error("Errore invio:", e);
@@ -379,7 +382,6 @@ function aggiornaContatoreLavori() {
     const contatoreTop = document.getElementById('contatore-lavori');
 
     righe.forEach((riga, index) => {
-        // Cerca se esiste già il titolo nella box, altrimenti lo crea
         let titoloBox = riga.querySelector('.titolo-box-lavoro');
         if (!titoloBox) {
             titoloBox = document.createElement('div');
@@ -389,15 +391,13 @@ function aggiornaContatoreLavori() {
         titoloBox.innerText = `LAVORO ${index + 1} DI ${totale}`;
     });
 
-    // Aggiorna il numerino blu in alto a destra
     if (contatoreTop) {
         contatoreTop.innerText = `1 / ${totale}`;
     }
 
-    // Effetto scorrimento: cambia il numero in alto mentre muovi il dito
     contenitore.onscroll = function() {
         let index = Math.round(this.scrollTop / this.offsetHeight);
-        if (contatoreTop) {
+        if (contatoreTop && !isNaN(index)) {
             contatoreTop.innerText = `${index + 1} / ${totale}`;
         }
     };
