@@ -395,15 +395,26 @@ function aggiornaContatoreLavori() {
         contatoreTop.innerText = `1 / ${totale}`;
     }
 
-    contenitore.onscroll = function() {
-        // Calcola l'indice basandosi sull'altezza della singola riga
-        const primaRiga = contenitore.querySelector('.riga-lavoro');
-        if (primaRiga) {
-            const altezzaRiga = primaRiga.offsetHeight + 20; // altezza + margin
-            let index = Math.round(this.scrollTop / altezzaRiga);
-            if (contatoreTop && !isNaN(index)) {
-                contatoreTop.innerText = `${Math.min(index + 1, totale)} / ${totale}`;
+contenitore.onscroll = function() {
+        const righe = contenitore.querySelectorAll('.riga-lavoro');
+        let index = 0;
+        let minDiff = Infinity;
+
+        // Trova la riga più vicina al centro della visuale
+        righe.forEach((riga, i) => {
+            const rect = riga.getBoundingClientRect();
+            const centroContenitore = contenitore.getBoundingClientRect().top + (contenitore.offsetHeight / 2);
+            const centroRiga = rect.top + (rect.height / 2);
+            const diff = Math.abs(centroContenitore - centroRiga);
+            
+            if (diff < minDiff) {
+                minDiff = diff;
+                index = i;
             }
+        });
+
+        if (contatoreTop) {
+            contatoreTop.innerText = `${index + 1} / ${totale}`;
         }
     };
 }
