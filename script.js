@@ -9,6 +9,8 @@ let clienteSelezionato = "";
 // Funzione per cambiare visualizzazione tra le pagine
 function mostraPagina(id) {
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+    // Forza lo scroll all'inizio quando si apre l'editor
+    document.getElementById('righe-intervento').scrollTop = 0;
     const target = document.getElementById(id);
     if (target) {
         target.classList.remove('hidden');
