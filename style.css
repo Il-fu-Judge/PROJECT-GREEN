@@ -1,80 +1,47 @@
 :root {
-    --primary: #1b5e20; /* Verde scuro */
-    --secondary: #0d47a1; /* Blu scuro */
+    --primary: #1b5e20; /* Verde scuro per massima leggibilità */
+    --secondary: #0d47a1; /* Blu scuro per Gestione Cliente */
     --bg: #f1f8e9;
     --text: #1b5e20;
     --white: #ffffff;
 }
 
-/* 1. STRUTTURA E SCROLLING */
 body, html { 
     height: 100%; 
     margin: 0; 
     font-family: 'Segoe UI', Roboto, sans-serif; 
     background-color: var(--bg); 
-    overflow: hidden; /* Impedisce il rimbalzo della pagina intera */
 }
 
 body { 
     display: flex; 
-    align-items: center; 
+    align-items: center; /* Centratura verticale */
     justify-content: center; 
-    padding: 10px;
+    padding: 20px;
     box-sizing: border-box;
 }
 
 .view { 
     width: 100%; 
     max-width: 450px; 
-    max-height: 95vh; /* Altezza massima 95% dello schermo */
     display: flex;
     flex-direction: column;
-    background: var(--bg);
-    overflow-y: auto; /* Attiva lo scorrimento se il contenuto è lungo */
-    padding: 15px;
-    box-sizing: border-box;
+    justify-content: center;
+    /* --- MODIFICA 1: Permette lo scorrimento se i contenuti sono troppi --- */
+    max-height: 90vh;
+    overflow-y: auto;
+    padding-right: 5px; /* Spazio per la barra di scorrimento */
 }
 
-/* 2. ELEMENTI COMUNI */
 .hidden { display: none !important; }
 
 h1, h2 { 
     text-align: center; 
     color: var(--primary); 
-    margin-bottom: 20px; 
+    margin-bottom: 30px; 
 }
 
-/* 3. INPUT E FORM (Sistemazione ORA e DATA) */
-.input-group { margin-bottom: 15px; }
-label { display: block; margin-bottom: 6px; font-weight: bold; color: var(--primary); }
-
-/* Stile unificato per tutti gli input principali */
-#data-intervento, 
-#ora-intervento, 
-#status-intervento, 
-#cerca-cliente,
-input[type="text"], 
-input[type="date"], 
-input[type="time"],
-select {
-    width: 100% !important;
-    padding: 15px;
-    border: 2px solid #c8e6c9;
-    border-radius: 12px;
-    font-size: 16px;
-    background-color: white !important; /* Sfondo bianco forzato */
-    color: #333;
-    box-sizing: border-box;
-    display: block;
-    outline: none;
-    appearance: none; /* Rimuove stili nativi brutti su iOS/Android */
-}
-
-input:focus, select:focus { 
-    border-color: var(--primary); 
-}
-
-/* 4. PULSANTI */
+/* Pulsanti Principali Dashboard */
 .btn-main {
     display: flex; align-items: center; justify-content: center; gap: 15px;
     width: 100%; padding: 25px; margin: 12px 0;
@@ -86,64 +53,72 @@ input:focus, select:focus {
     cursor: pointer;
 }
 
-.btn-main.secondary { color: var(--secondary); }
-.btn-main:active { transform: scale(0.97); }
+/* Colore specifico per Gestione Cliente */
+.btn-main.secondary { 
+    color: var(--secondary); 
+}
 
+.btn-main:active {
+    transform: scale(0.97); /* Effetto pressione */
+    background-color: #fcfcfc;
+}
+
+/* Form Nuovo Cliente */
+.input-group { margin-bottom: 18px; }
+label { display: block; margin-bottom: 6px; font-weight: bold; color: var(--primary); }
+.input-row { display: flex; gap: 8px; }
+
+input {
+    flex-grow: 1; padding: 16px;
+    border: 2px solid #c8e6c9; border-radius: 12px;
+    font-size: 16px; outline: none;
+}
+
+input:focus { border-color: var(--primary); }
+
+.btn-icon {
+    padding: 16px; background: var(--primary); color: var(--white);
+    border: none; border-radius: 12px; min-width: 55px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* Pulsanti di Azione Finale */
 .btn-save {
     width: 100%; padding: 18px; background: var(--primary);
     color: var(--white); border: none; border-radius: 12px;
-    font-size: 18px; font-weight: bold; margin-top: 10px;
+    font-size: 18px; font-weight: bold; margin-top: 25px;
     box-shadow: 0 4px 10px rgba(27, 94, 32, 0.3);
-    position: sticky; /* Rimane visibile in fondo se possibile */
-    bottom: 0;
 }
 
-/* Pulsante Home/X Flottante */
-.btn-home-float {
-    position: sticky; /* Ora è sticky così non scappa mentre scorri */
-    top: 0;
-    align-self: flex-end;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+.btn-back {
+    background: none; border: none; color: var(--secondary);
+    font-weight: bold; margin-bottom: 15px; cursor: pointer;
+    align-self: flex-start;
+}
+
+.btn-stop {
+    width: 80%; /* Più grande e facile da premere */
+    padding: 20px;
+    background-color: #d32f2f; /* Rosso deciso */
     color: white;
     border: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(211, 47, 47, 0.4);
     cursor: pointer;
-    margin-bottom: -40px; /* Non ruba spazio al titolo */
 }
 
-/* 5. GESTIONE RIGHE LAVORO (EDITOR) */
-#righe-intervento {
-    margin-top: 10px;
+.btn-stop:active {
+    transform: scale(0.95);
 }
 
-.riga-lavoro {
-    background: white;
-    padding: 15px;
-    border-radius: 15px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
-    border: 1px solid #eee;
-}
-
-.in-lavoro, .in-pianta, .in-note {
-    width: 100% !important;
-    margin-bottom: 10px;
-    border: 1px solid #ddd !important;
-    border-radius: 8px !important;
-    padding: 10px !important;
-}
-
-/* 6. LISTE E SCHEDE */
 .lista-container {
-    margin-top: 10px;
-    overflow-y: visible; /* Lo scroll è gestito dalla .view principale */
+    margin-top: 20px;
+    max-height: 60vh;
+    overflow-y: auto; /* Permette di scorrere la lista se è lunga */
 }
 
 .scheda-cliente {
@@ -155,8 +130,229 @@ input:focus, select:focus {
     border-left: 5px solid var(--secondary);
 }
 
-.bg-blu { background-color: #0d47a1; }
-.bg-verde { background-color: #2e7d32; }
+.scheda-cliente h3 {
+    margin: 0 0 5px 0;
+    color: var(--primary);
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+.scheda-cliente p {
+    margin: 2px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.azioni-scheda {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-azione {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-tel { background: #e3f2fd; color: #0d47a1; } /* Blu chiaro */
+.btn-map { background: #e8f5e9; color: #1b5e20; } /* Verde chiaro */
+
+/* Overlay Vocale */
+.status-box {
+    background: rgba(0,0,0,0.85); color: white;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 1000;
+}
+
+/* Posizionamento del pulsante Torna Indietro in basso a destra */
+.btn-back {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #333;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Barra di ricerca corretta */
+.search-container {
+    width: 100%;
+    padding: 0 15px; /* Spazio dai bordi dello schermo */
+    box-sizing: border-box; /* Impedisce alla barra di sbordare */
+}
+
+#cerca-cliente {
+    width: 100%;
+    padding: 15px;
+    border-radius: 25px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    margin: 10px 0 20px 0;
+    box-sizing: border-box; /* Fondamentale per non sbordare */
+    display: block;
+}
+
+/* Pulsanti Home Flottanti */
+.btn-home-float {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    color: white;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-home-float:active {
+    transform: scale(0.9);
+}
+
+/* Colori specifici per le pagine */
+.bg-blu { background-color: #0d47a1; }   /* Per Gestione */
+.bg-verde { background-color: #2e7d32; } /* Per Nuovo Cliente */
+
+/* Box dell'intervento nella lista */
+.box-intervento {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 5px solid #ffa000; /* Arancione per "Da fare" */
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Riga singola di lavoro nell'editor */
+.riga-lavoro {
+    background: white;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.riga-lavoro input {
+    width: 100%;
+    margin-bottom: 5px;
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 5px;
+}
+
+/* Menu a tendina, Data e ORA larghi quanto lo schermo */
+/* --- MODIFICA 2: Aggiunto #ora-intervento per averlo uguale alla data --- */
+#status-intervento, #data-intervento, #ora-intervento {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #c8e6c9; /* Colore verde chiaro come i tuoi altri input */
+    font-size: 16px;
+    background-color: white; 
+    appearance: none; 
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    display: block;
+}
+
+/* Box per le singole azioni (Intervento, Pianta, Note) */
+.riga-lavoro {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+    position: relative;
+    border: 1px solid #eee;
+}
+
+/* Stile per le 3 box interne con microfono */
+.mini-input-group {
+    margin-bottom: 15px;
+}
+
+.mini-input-group label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.campo-intervento-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.campo-intervento-row input, .campo-intervento-row textarea {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.badge-status {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: #eee;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+/* Forza la larghezza dei menu e input per non uscire dallo schermo */
+/* --- MODIFICA 3: Aggiunto #ora-intervento anche qui --- */
+#data-intervento, #ora-intervento, #status-intervento, .in-lavoro, .in-pianta, .in-note {
+    width: 100% !important;
+    box-sizing: border-box; 
+    font-family: inherit; 
+    font-size: 16px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Font uniforme per le note nelle box riassuntive */
+.nota-intervento {
+    font-family: inherit;
+    font-size: 14px; 
+    color: #555;
+    margin-top: 5px;
+}
 
 /* Badge Status */
 .badge-status {
@@ -167,13 +363,26 @@ input:focus, select:focus {
     font-weight: bold;
     color: white;
 }
-.status-da-fare { background-color: #ffa000; } /* Arancione */
-.status-completato { background-color: #2e7d32; } /* Verde */
 
-/* Overlay Vocale */
-.status-box {
-    background: rgba(0,0,0,0.85); color: white;
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    z-index: 2000;
+.status-da-fare { background-color: #2e7d32; } /* Verde */
+.status-completato { background-color: #d32f2f; } /* Rosso */
+
+/* Icone azioni nelle box */
+.azioni-intervento {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    justify-content: flex-end;
 }
+
+.btn-icon-action {
+    background: none;
+    border: none;
+    color: #777;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.btn-delete { color: #d32f2f; }
