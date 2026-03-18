@@ -176,7 +176,10 @@ function apriDettagli(nome) {
     const raggruppati = {};
     interventiCliente.forEach(i => {
         const dataKey = i.data; 
-        if (!raggruppati[dataKey]) raggruppati[dataKey] = { status: i.status, righe: [] };
+        if (!raggruppati[dataKey]) {
+            // Qui salviamo anche l'ora nel raggruppamento
+            raggruppati[dataKey] = { status: i.status, ora: i.ora, righe: [] };
+        }
         raggruppati[dataKey].righe.push(i);
     });
 
@@ -194,10 +197,18 @@ function apriDettagli(nome) {
         const lavS = info.righe[0].lavoro.replace(/'/g, "\\'");
         const piaS = info.righe[0].pianta.replace(/'/g, "\\'");
         const notS = (info.righe[0].note || "").replace(/'/g, "\\'");
+        
+        // Se l'ora non c'è nel database, mostriamo i trattini
+        const oraDisplay = info.ora ? info.ora : "--:--";
 
         box.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:bold;">${new Date(data).toLocaleDateString('it-IT')}</span>
+                <div>
+                    <span style="font-weight:bold;">${new Date(data).toLocaleDateString('it-IT')}</span>
+                    <span style="margin-left:10px; font-size:14px; color:#666;">
+                        <i class="far fa-clock"></i> ${oraDisplay}
+                    </span>
+                </div>
                 <span class="badge-status ${statusClass}">${info.status}</span>
             </div>
             <ul style="margin:10px 0; padding-left:20px; font-size:15px;">${elenco}</ul>
