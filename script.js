@@ -324,21 +324,31 @@ async function eliminaIntervento(dataDaEliminare) {
 }
 
 async function inviaACalendario(dataIntervento, lavoro, piante, note) {
-    // PULIZIA DATA: Trasforma "2026-03-18T23..." in "2026-03-18"
-    if (dataIntervento.includes("T")) {
-        dataIntervento = dataIntervento.split("T")[0];
+    // 1. Recupero l'orario dall'input (se non esiste o è vuoto, mettiamo 08:00 di default)
+    const inputOra = document.getElementById('ora-intervento');
+    const ora = inputOra && inputOra.value ? inputOra.value : "08:00";
+
+    // 2. Pulizia della data (prendiamo solo YYYY-MM-DD)
+    let dataPulita = dataIntervento;
+    if (dataPulita.includes("T")) {
+        dataPulita = dataPulita.split("T")[0];
     }
 
+    // 3. Uniamo Data e Ora nel formato ISO locale (es. 2026-03-20T09:30:00)
+    // Usiamo l'ora locale senza la "Z" finale per evitare che Google la interpreti come UTC
+    const dataOraCompleta = `${dataPulita}T${ora}:00`;
+
+    // 4. Recupero info cliente per indirizzo e GPS
     const infoCliente = tuttiIClienti.find(c => c.cliente === clienteSelezionato);
     
-    // 2. Messaggio di conferma visivo
-    alert("Invio al calendario: " + (lavoro || "Intervento") + " del " + dataIntervento);
+    // Messaggio di conferma visivo
+    alert("Invio al calendario: " + (lavoro || "Intervento") + " alle ore " + ora);
 
     const payload = {
         tipo: "AGGIUNGI_CALENDARIO",
         cliente: clienteSelezionato,
-        data: dataIntervento,
-        lavoro: lavoro || "Intervento", // Evita che sia vuoto
+        data: dataOraCompleta, // Inviamo la stringa con l'orario
+        lavoro: lavoro || "Intervento",
         pianta: piante || "-",
         note: note || "-",
         indirizzo: infoCliente ? infoCliente.indirizzo : "",
@@ -346,13 +356,14 @@ async function inviaACalendario(dataIntervento, lavoro, piante, note) {
     };
 
     try {
-        // Rimuoviamo temporaneamente 'no-cors' per vedere se il browser ci segnala errori
+        // Invio allo script
         const response = await fetch(WEB_APP_URL, { 
             method: 'POST', 
+            // mode: 'no-cors', // Puoi rimetterlo se hai problemi di CORS, ma ora testiamo così
             body: JSON.stringify(payload) 
         });
         
-        alert("Richiesta inviata! Controlla il calendario tra pochi secondi.");
+        alert("Intervento aggiunto con successo all'orario indicato!");
     } catch (e) { 
         console.error("Errore invio:", e);
         alert("Errore nell'invio: " + e.message); 
