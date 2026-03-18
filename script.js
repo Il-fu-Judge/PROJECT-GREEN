@@ -251,6 +251,7 @@ function caricaInterventoPerModifica(dataOriginale) {
     
     document.getElementById('data-intervento').value = dataFormattata;
     document.getElementById('status-intervento').value = interventiData[0].status;
+    document.getElementById('ora-intervento').value = interventiData[0].ora || "";
     
     const container = document.getElementById('righe-intervento');
     container.innerHTML = ''; 
