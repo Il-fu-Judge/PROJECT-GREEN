@@ -459,3 +459,8 @@ input:focus { border-color: var(--primary); }
     padding: 8px !important;
     font-size: 15px !important;
 }
+
+#data-intervento, #ora-intervento, #status-intervento {
+    height: 40px !important; /* Forza l'altezza standard per tutti */
+    box-sizing: border-box;
+}
