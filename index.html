@@ -75,19 +75,24 @@
         </button>
     </div>
 
-    <div id="editor-intervento" class="view hidden">
-        <button onclick="mostraPagina('scheda-cliente')" class="btn-home-float bg-blu">
-            <i class="fas fa-times"></i>
-        </button>
-        <h2 style="text-align: center;">Dettaglio Lavoro</h2>
+<div id="editor-intervento" class="view hidden">
+    <button onclick="mostraPagina('scheda-cliente')" class="btn-home-float bg-blu">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <div class="editor-header">
+        <h2 style="text-align: center; margin-top: 10px;">Dettaglio Lavoro</h2>
+        
         <div class="input-group">
             <label>Data Intervento</label>
             <input type="date" id="data-intervento">
         </div>
+
         <div class="input-group">
             <label>Ora Intervento</label>
-            <input type="time" id="ora-intervento" value="08:00">
+            <input type="time" id="ora-intervento">
         </div>
+
         <div class="input-group">
             <label>Status</label>
             <select id="status-intervento">
@@ -95,14 +100,16 @@
                 <option value="Completato">Completato</option>
             </select>
         </div>
-        <hr>
-        <h3>Azioni da svolgere</h3>
-        <div id="righe-intervento"></div>
-        <button onclick="aggiungiRigaLavoro()" class="btn-icon" style="width: 50px; height: 50px; border-radius: 50%; background: #2e7d32; color: white; margin: 10px auto; display: block;">
-            <i class="fas fa-plus"></i>
-        </button>
-        <button onclick="salvaIntervento()" class="btn-save" style="margin-top: 30px;">SALVA INTERVENTO</button>
     </div>
+    <h3>Azioni da svolgere</h3>
+    <div id="righe-intervento"></div>
+    
+    <button onclick="aggiungiRigaLavoro()" class="btn-icon" style="width: 50px; height: 50px; border-radius: 50%; background: #2e7d32; color: white; margin: 10px auto; display: block;">
+        <i class="fas fa-plus"></i>
+    </button>
+    
+    <button onclick="salvaIntervento()" class="btn-save" style="margin-top: 30px;">SALVA INTERVENTO</button>
+</div>
 
     <div id="status-vocale" class="status-box hidden">
         <i class="fas fa-microphone fa-3x" style="color: #d32f2f; margin-bottom: 20px;"></i>
