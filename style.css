@@ -416,49 +416,46 @@ input:focus { border-color: var(--primary); }
     -webkit-overflow-scrolling: touch; /* Per fluidità su iPhone */
 }
 
-/* Container dello scorrimento */
 .scroll-snap-container {
-    width: 100%;
     scroll-behavior: smooth;
-    padding-top: 20px; /* Spazio per staccare dalla testata */
+    -webkit-overflow-scrolling: touch;
 }
 
 .riga-lavoro {
-    scroll-snap-align: center; /* Centra la box verticalmente nello spazio rimasto */
+    scroll-snap-align: center;
     scroll-snap-stop: always;
     background: white;
-    width: 95%; /* Leggermente più stretta per respirare dai bordi */
+    width: 92%;
     max-width: 400px;
-    margin-bottom: 100vh; /* Trucco per non vedere mai la box successiva mentre si guarda una */
-    padding: 20px;
-    border-radius: 20px;
+    height: 350px; /* Altezza fissa della box per precisione */
+    flex-shrink: 0;
+    margin-bottom: 50px; /* Distanza tra le schede durante lo scroll */
+    padding: 15px;
+    border-radius: 15px;
     border: 1px solid #eee;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-    flex-shrink: 0; /* Impedisce alla box di schiacciarsi */
-}
-
-/* Rimuove l'ultimo margine per permettere lo scroll finale */
-.riga-lavoro:last-child {
-    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .titolo-box-lavoro {
     color: var(--primary);
     font-weight: bold;
-    margin-bottom: 15px;
     font-size: 15px;
+    margin-bottom: 10px;
+    text-align: center;
     border-bottom: 1px solid #eee;
-    padding-bottom: 8px;
-    text-transform: uppercase;
+    padding-bottom: 5px;
 }
 
-/* Compattiamo gli input interni alle box */
-.mini-input-group {
-    margin-bottom: 8px !important;
-}
+/* Compattiamo gli input interni per farli stare nei 350px di altezza */
+.mini-input-group { margin-bottom: 5px !important; }
+.mini-input-group label { display: block; margin-bottom: 2px; }
 
 .campo-intervento-row input, 
 .campo-intervento-row textarea {
-    padding: 10px !important;
+    padding: 8px !important;
     font-size: 15px !important;
 }
