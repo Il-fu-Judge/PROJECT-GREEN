@@ -342,20 +342,22 @@ async function inviaACalendario(dataIntervento, lavoro, piante, note) {
     const inputOra = document.getElementById('ora-intervento');
     const ora = inputOra && inputOra.value ? inputOra.value : "08:00";
 
-    let dataPulita = dataIntervento;
-    if (dataPulita.includes("T")) {
-        dataPulita = dataPulita.split("T")[0];
-    }
+    // Prendiamo solo la parte YYYY-MM-DD ignorando tutto il resto
+    let dataPulita = dataIntervento.split("T")[0];
 
+    // Componiamo la stringa ISO Locale SENZA la "Z" finale
+    // Esempio: "2026-03-18T09:30:00"
     const dataOraCompleta = `${dataPulita}T${ora}:00`;
+
     const infoCliente = tuttiIClienti.find(c => c.cliente === clienteSelezionato);
     
-    alert("Invio al calendario: " + (lavoro || "Intervento") + " alle ore " + ora);
+    // Messaggio di conferma con la data corretta per sicurezza
+    alert(`Invio al calendario: ${lavoro} il ${dataPulita} alle ${ora}`);
 
     const payload = {
         tipo: "AGGIUNGI_CALENDARIO",
         cliente: clienteSelezionato,
-        data: dataOraCompleta,
+        data: dataOraCompleta, // Ora passerà esattamente come scritta
         lavoro: lavoro || "Intervento",
         pianta: piante || "-",
         note: note || "-",
@@ -364,14 +366,10 @@ async function inviaACalendario(dataIntervento, lavoro, piante, note) {
     };
 
     try {
-        await fetch(WEB_APP_URL, { 
-            method: 'POST', 
-            body: JSON.stringify(payload) 
-        });
-        alert("Intervento aggiunto con successo all'orario indicato!");
-    } catch (e) { 
-        console.error("Errore invio:", e);
-        alert("Errore nell'invio: " + e.message); 
+        await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+        alert("Salvato correttamente nel calendario!");
+    } catch (e) {
+        alert("Errore invio: " + e.message);
     }
 }
 
