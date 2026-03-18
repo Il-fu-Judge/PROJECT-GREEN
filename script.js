@@ -324,7 +324,11 @@ async function eliminaIntervento(dataDaEliminare) {
 }
 
 async function inviaACalendario(dataIntervento, lavoro, piante, note) {
-    // 1. Recupero info cliente (per indirizzo e GPS)
+    // PULIZIA DATA: Trasforma "2026-03-18T23..." in "2026-03-18"
+    if (dataIntervento.includes("T")) {
+        dataIntervento = dataIntervento.split("T")[0];
+    }
+
     const infoCliente = tuttiIClienti.find(c => c.cliente === clienteSelezionato);
     
     // 2. Messaggio di conferma visivo
