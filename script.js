@@ -256,25 +256,35 @@ function aggiungiRigaLavoro() {
     aggiornaContatoreLavori();
 }
 
-function caricaInterventoPerModifica(dataOriginale) {
-    const interventiData = tuttiGliInterventi.filter(i => i.cliente === clienteSelezionato && i.data === dataOriginale);
-    if (interventiData.length === 0) return;
+function caricaInterventoPerModifica(idUnico) {
+    // Cerchiamo l'intervento esatto usando l'ID invece della data
+    const interventiData = tuttiGliInterventi.filter(i => i.id === idUnico);
+    
+    if (interventiData.length === 0) {
+        alert("Intervento non trovato.");
+        return;
+    }
 
     mostraPagina('editor-intervento');
-    const d = new Date(dataOriginale);
+    
+    // Prendiamo il primo (e unico) gruppo di questo ID
+    const intervento = interventiData[0];
+    
+    // Formattiamo la data per l'input HTML (YYYY-MM-DD)
+    const d = new Date(intervento.data);
     const dataFormattata = d.getFullYear() + '-' + 
                            String(d.getMonth() + 1).padStart(2, '0') + '-' + 
                            String(d.getDate()).padStart(2, '0');
     
     document.getElementById('data-intervento').value = dataFormattata;
-    document.getElementById('status-intervento').value = interventiData[0].status;
-    document.getElementById('ora-intervento').value = interventiData[0].ora || "";
+    document.getElementById('ora-intervento').value = intervento.ora || "";
+    document.getElementById('status-intervento').value = intervento.status;
     
     const container = document.getElementById('righe-intervento');
     container.innerHTML = ''; 
 
+    // Carichiamo tutte le righe associate a quell'ID
     interventiData.forEach(r => {
-        // Creazione manuale per evitare loop di aggiornamento contatore durante il caricamento
         const rigaId = Math.random().toString(36).substr(2, 9);
         const div = document.createElement('div');
         div.className = 'riga-lavoro';
@@ -283,6 +293,7 @@ function caricaInterventoPerModifica(dataOriginale) {
             <div class="mini-input-group"><label>Lavoro</label><div class="campo-intervento-row"><input type="text" class="in-lavoro" id="l-${rigaId}"><button onclick="avviaVocale('l-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>
             <div class="mini-input-group"><label>Pianta</label><div class="campo-intervento-row"><input type="text" class="in-pianta" id="p-${rigaId}"><button onclick="avviaVocale('p-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>
             <div class="mini-input-group"><label>Note</label><div class="campo-intervento-row"><textarea class="in-note" id="n-${rigaId}"></textarea><button onclick="avviaVocale('n-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>`;
+        
         container.appendChild(div);
         
         div.querySelector('.in-lavoro').value = r.lavoro;
@@ -291,7 +302,6 @@ function caricaInterventoPerModifica(dataOriginale) {
     });
     
     aggiornaContatoreLavori();
-    document.getElementById('righe-intervento').scrollTop = 0;
 }
 
 async function salvaIntervento() {
