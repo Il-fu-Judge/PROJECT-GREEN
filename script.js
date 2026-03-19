@@ -173,18 +173,26 @@ function apriDettagli(nome) {
         return;
     }
 
+    // Raggruppiamo per ID (Colonna A del foglio)
     const raggruppati = {};
     interventiCliente.forEach(i => {
-        const dataKey = i.data; 
-        if (!raggruppati[dataKey]) {
-            // Qui salviamo anche l'ora nel raggruppamento
-            raggruppati[dataKey] = { status: i.status, ora: i.ora, righe: [] };
+        const idKey = i.id; 
+        if (!raggruppati[idKey]) {
+            raggruppati[idKey] = { 
+                data: i.data, 
+                ora: i.ora, 
+                status: i.status, 
+                righe: [] 
+            };
         }
-        raggruppati[dataKey].righe.push(i);
+        raggruppati[idKey].righe.push(i);
     });
 
-    for (const data in raggruppati) {
-        const info = raggruppati[data];
+    // Trasformiamo in array per ordinarli dal più recente (basandoci sull'ID o sulla data)
+    const listaIds = Object.keys(raggruppati).sort((a, b) => b.localeCompare(a));
+
+    listaIds.forEach(id => {
+        const info = raggruppati[id];
         const isCompletato = info.status === "Completato";
         
         const box = document.createElement('div');
@@ -194,39 +202,37 @@ function apriDettagli(nome) {
         let elenco = info.righe.map(r => `<li><b>${r.lavoro}</b> su ${r.pianta}</li>`).join('');
         const statusClass = isCompletato ? "status-completato" : "status-da-fare";
 
-        const lavS = info.righe[0].lavoro.replace(/'/g, "\\'");
-        const piaS = info.righe[0].pianta.replace(/'/g, "\\'");
-        const notS = (info.righe[0].note || "").replace(/'/g, "\\'");
-        
-        // Se l'ora non c'è nel database, mostriamo i trattini
-        const oraDisplay = info.ora ? info.ora : "--:--";
+        // Preparazione dati per i pulsanti (usiamo il primo rigo del gruppo)
+        const r0 = info.righe[0];
+        const lavS = r0.lavoro.replace(/'/g, "\\'");
+        const piaS = r0.pianta.replace(/'/g, "\\'");
+        const notS = (r0.note || "").replace(/'/g, "\\'");
 
         box.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <span style="font-weight:bold;">${new Date(data).toLocaleDateString('it-IT')}</span>
+                    <span style="font-weight:bold;">${new Date(info.data).toLocaleDateString('it-IT')}</span>
                     <span style="margin-left:10px; font-size:14px; color:#666;">
-                        <i class="far fa-clock"></i> ${oraDisplay}
+                        <i class="far fa-clock"></i> ${info.ora || "--:--"}
                     </span>
                 </div>
                 <span class="badge-status ${statusClass}">${info.status}</span>
             </div>
             <ul style="margin:10px 0; padding-left:20px; font-size:15px;">${elenco}</ul>
-            <p class="nota-intervento">${info.righe[0].note || ""}</p>
+            <p class="nota-intervento">${r0.note || ""}</p>
             
             <div class="azioni-intervento">
                 <button class="btn-icon-action" title="Calendario" 
-                    onclick="inviaACalendario('${data}', '${lavS}', '${piaS}', '${notS}')">
+                    onclick="inviaACalendario('${info.data}', '${lavS}', '${piaS}', '${notS}')">
                     <i class="fas fa-calendar-plus" style="color: #4285F4;"></i>
                 </button>
 
-                <button class="btn-icon-action" onclick="caricaInterventoPerModifica('${data}')"><i class="fas fa-edit"></i></button>
-                <button class="btn-icon-action"><i class="fas fa-image"></i></button>
-                <button class="btn-icon-action btn-delete" onclick="eliminaIntervento('${data}')"><i class="fas fa-trash-alt"></i></button>
+                <button class="btn-icon-action" onclick="caricaInterventoPerModifica('${id}')"><i class="fas fa-edit"></i></button>
+                <button class="btn-icon-action btn-delete" onclick="eliminaIntervento('${id}')"><i class="fas fa-trash-alt"></i></button>
             </div>
         `;
         container.appendChild(box);
-    }
+    });
 }
 
 function nuovoIntervento() {
@@ -337,19 +343,20 @@ async function salvaIntervento() {
     }
 }
 
-async function eliminaIntervento(dataDaEliminare) {
-    if (confirm("Sei sicuro di voler cancellare questo intervento?")) {
-        const payload = {
-            tipo: "ELIMINA_INTERVENTO",
-            cliente: clienteSelezionato,
-            data: dataDaEliminare
-        };
-        try {
-            await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            alert("Intervento eliminato.");
-            tuttiGliInterventi = tuttiGliInterventi.filter(i => !(i.cliente === clienteSelezionato && i.data === dataDaEliminare));
-            apriDettagli(clienteSelezionato);
-        } catch (e) { alert("Errore eliminazione."); }
+async function eliminaIntervento(id) {
+    if (!confirm("Vuoi eliminare definitivamente questo intervento?")) return;
+
+    const payload = {
+        tipo: "ELIMINA_INTERVENTO",
+        id: id // Inviamo l'ID unico al Google Script
+    };
+
+    try {
+        await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+        alert("Intervento eliminato!");
+        apriGestione(); // Ricarica tutto
+    } catch (e) {
+        alert("Errore: " + e.message);
     }
 }
 
