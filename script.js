@@ -5,6 +5,7 @@ let recognition;
 let tuttiIClienti = [];
 let tuttiGliInterventi = [];
 let clienteSelezionato = "";
+let idInModifica = null; // Terrà traccia se stiamo creando un nuovo intervento o modificandone uno esistente
 
 // Funzione per cambiare visualizzazione tra le pagine
 function mostraPagina(id) {
@@ -236,9 +237,11 @@ function apriDettagli(nome) {
 }
 
 function nuovoIntervento() {
+    idInModifica = null; // Reset dell'ID perché è un nuovo lavoro
     mostraPagina('editor-intervento');
     document.getElementById('righe-intervento').innerHTML = '';
     document.getElementById('data-intervento').valueAsDate = new Date();
+    document.getElementById('ora-intervento').value = ""; // Pulisce l'ora
     aggiungiRigaLavoro();
 }
 
@@ -257,20 +260,15 @@ function aggiungiRigaLavoro() {
 }
 
 function caricaInterventoPerModifica(idUnico) {
-    // Cerchiamo l'intervento esatto usando l'ID invece della data
+    idInModifica = idUnico; // <--- Memorizziamo l'ID che stiamo toccando
     const interventiData = tuttiGliInterventi.filter(i => i.id === idUnico);
     
-    if (interventiData.length === 0) {
-        alert("Intervento non trovato.");
-        return;
-    }
+    if (interventiData.length === 0) { alert("Intervento non trovato."); return; }
 
     mostraPagina('editor-intervento');
-    
-    // Prendiamo il primo (e unico) gruppo di questo ID
     const intervento = interventiData[0];
     
-    // Formattiamo la data per l'input HTML (YYYY-MM-DD)
+    // Formattazione data sicura
     const d = new Date(intervento.data);
     const dataFormattata = d.getFullYear() + '-' + 
                            String(d.getMonth() + 1).padStart(2, '0') + '-' + 
@@ -283,7 +281,6 @@ function caricaInterventoPerModifica(idUnico) {
     const container = document.getElementById('righe-intervento');
     container.innerHTML = ''; 
 
-    // Carichiamo tutte le righe associate a quell'ID
     interventiData.forEach(r => {
         const rigaId = Math.random().toString(36).substr(2, 9);
         const div = document.createElement('div');
@@ -293,24 +290,19 @@ function caricaInterventoPerModifica(idUnico) {
             <div class="mini-input-group"><label>Lavoro</label><div class="campo-intervento-row"><input type="text" class="in-lavoro" id="l-${rigaId}"><button onclick="avviaVocale('l-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>
             <div class="mini-input-group"><label>Pianta</label><div class="campo-intervento-row"><input type="text" class="in-pianta" id="p-${rigaId}"><button onclick="avviaVocale('p-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>
             <div class="mini-input-group"><label>Note</label><div class="campo-intervento-row"><textarea class="in-note" id="n-${rigaId}"></textarea><button onclick="avviaVocale('n-${rigaId}')" class="btn-icon"><i class="fas fa-microphone"></i></button></div></div>`;
-        
         container.appendChild(div);
-        
         div.querySelector('.in-lavoro').value = r.lavoro;
         div.querySelector('.in-pianta').value = r.pianta;
         div.querySelector('.in-note').value = r.note;
     });
-    
     aggiornaContatoreLavori();
 }
 
 async function salvaIntervento() {
     const btn = document.querySelector('#editor-intervento .btn-save');
     const righe = document.querySelectorAll('.riga-lavoro');
-    
-    // Recuperiamo i dati generali
     const dataIntervento = document.getElementById('data-intervento').value;
-    const oraIntervento = document.getElementById('ora-intervento').value; // <--- NUOVO
+    const oraIntervento = document.getElementById('ora-intervento').value;
     const statusIntervento = document.getElementById('status-intervento').value;
     
     let dettagli = [];
@@ -327,26 +319,25 @@ async function salvaIntervento() {
 
     const payload = {
         tipo: "NUOVO_INTERVENTO",
+        idInModifica: idInModifica, // <--- Se è null, lo script crea un nuovo ID. Se c'è, lo sovrascrive.
         cliente: clienteSelezionato,
         data: dataIntervento,
-        ora: oraIntervento, // <--- INVIO L'ORA AL DATABASE
+        ora: oraIntervento,
         status: statusIntervento,
         dettagli: dettagli
     };
 
-    btn.innerText = "AGGIORNAMENTO..."; 
+    btn.innerText = "SALVATAGGIO..."; 
     btn.disabled = true;
 
     try {
         await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const response = await fetch(WEB_APP_URL);
-        const data = await response.json();
-        tuttiGliInterventi = data.interventi || [];
-        alert("Intervento aggiornato!");
-        apriDettagli(clienteSelezionato);
+        await new Promise(resolve => setTimeout(resolve, 1200)); // Pausa tecnica per il DB
+        alert(idInModifica ? "Intervento aggiornato!" : "Nuovo intervento salvato!");
+        idInModifica = null; // Reset fondamentale
+        apriGestione(); 
     } catch (e) { 
-        alert("Errore salvataggio."); 
+        alert("Errore: " + e.message); 
     } finally { 
         btn.innerText = "SALVA INTERVENTO"; 
         btn.disabled = false; 
